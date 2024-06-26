@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ForbiddenErrorCode> handleException(ForbiddenException e) {
         log.error("handleException() in GlobalExceptionHandler throw ForbiddenException : {}", e.getMessage());
         return ResponseEntity
-                .status(ForbiddenErrorCode.FORBIDDEN.getHttpStatus())
-                .body(ForbiddenErrorCode.FORBIDDEN);
+                .status(e.getErrorCode().getHttpStatus())
+                .body(e.getErrorCode());
     }
 }
