@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.ForbiddenException;
 import nutshell.server.exception.NotFoundException;
+import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -70,4 +71,13 @@ public class GlobalExceptionHandler {
                 .status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode());
     }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<UnAuthorizedErrorCode> handleException(UnAuthorizedException e) {
+        log.error("handleException() in GlobalExceptionHandler throw UnAuthorizedException : {}", e.getMessage());
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(e.getErrorCode());
+    }
+
 }

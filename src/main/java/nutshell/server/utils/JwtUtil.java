@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.constant.AuthConstant;
 import nutshell.server.dto.auth.JwtTokensDto;
+import nutshell.server.exception.UnAuthorizedException;
+import nutshell.server.exception.code.UnAuthorizedErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -63,5 +65,12 @@ public class JwtUtil implements InitializingBean {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public static Object checkPrincipal(final Object principal) {
+        if ("anonymousUser".equals(principal)) {
+            throw new UnAuthorizedException(UnAuthorizedErrorCode.UNAUTHORIZED);
+        }
+        return principal;
     }
 }
