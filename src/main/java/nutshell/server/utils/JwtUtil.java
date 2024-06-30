@@ -68,7 +68,7 @@ public class JwtUtil implements InitializingBean {
     }
 
     public static Object checkPrincipal(final Object principal) {
-        if (AuthConstant.NO_AUTHORIZATION_USER.equals(principal)) {
+        if (AuthConstant.ANONYMOUS_USER.equals(principal)) {
             throw new UnAuthorizedException(UnAuthorizedErrorCode.UNAUTHORIZED);
         }
         return principal;
