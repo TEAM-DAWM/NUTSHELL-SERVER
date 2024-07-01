@@ -17,19 +17,24 @@ public class TimeBlock {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="date", nullable = false)
     private LocalDate date;
 
+    @Column(name="start_time", nullable = false)
     private String startTime;
 
+    @Column(name="end_time", nullable = false)
     private String endTime;
 
-    @ManyToOne(targetEntity= Task.class, fetch=FetchType.LAZY)
-    @JoinColumn(name="task_id")
-    private Task task;
-
+    @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToOne(targetEntity= Task.class, fetch=FetchType.LAZY)
+    @JoinColumn(name="task_id", nullable = false)
+    private Task task;
 
     @Builder
     public TimeBlock(LocalDate date, String startTime, String endTime, Task task) {

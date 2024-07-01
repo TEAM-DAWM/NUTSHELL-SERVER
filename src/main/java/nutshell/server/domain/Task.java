@@ -9,6 +9,7 @@ import nutshell.server.dto.type.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,34 +19,50 @@ public class Task {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description", length=1000)
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private Status status;
 
+    @Column(name = "priority")
     private String priority;
 
+    @Column(name = "dead_line")
     private LocalDateTime deadLine;
 
+    @Column(name = "assigned_date")
     private LocalDate assignedDate;
 
+    @Column(name = "completion_date")
     private LocalDate completionDate;
 
+    @Column(name = "reminder")
     private String reminder;
 
+    @Column(name = "repitition")
     private String repitition;
 
+    @Column(name = "inprogress_date")
     private LocalDate inprogressDate;
 
+    @Column(name = "created_at", nullable = false)
     private LocalDate createdAt;
 
+    @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt;
 
     @ManyToOne(targetEntity= User.class, fetch=FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<TimeBlock> timeBlocks;
+
 
     @Builder
     public Task(User user, String name, String description, LocalDateTime deadLine) {
