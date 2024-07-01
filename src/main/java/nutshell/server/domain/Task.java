@@ -22,7 +22,7 @@ public class Task {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", length=1000)
+    @Column(name = "description")
     private String description;
 
     @Enumerated(EnumType.STRING)

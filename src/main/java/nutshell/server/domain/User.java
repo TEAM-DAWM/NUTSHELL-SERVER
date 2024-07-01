@@ -24,7 +24,7 @@ public class User {
     @Column(name="email", nullable = false)
     private String email;
 
-    @Column(name="serial_id", nullable = false, length = 1000)
+    @Column(name="serial_id", nullable = false)
     private String serialId;
 
     @Column(name="google_token")
