@@ -6,6 +6,7 @@ public class AuthConstant {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String ANONYMOUS_USER = "anonymousUser";
     public static final String[] AUTH_WHITELIST = {
+            "/actuator/health",
             "/api/**"
     };
     private AuthConstant() {
