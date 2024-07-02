@@ -44,8 +44,8 @@ public class Task {
     @Column(name = "reminder")
     private String reminder;
 
-    @Column(name = "repitition")
-    private String repitition;
+    @Column(name = "repetition")
+    private String repetition;
 
     @Column(name = "inprogress_date")
     private LocalDate inprogressDate;
