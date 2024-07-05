@@ -73,4 +73,9 @@ public class JwtUtil implements InitializingBean {
         }
         return principal;
     }
+
+    // 로그아웃 메서드. redis 에서 refreshToken 삭제
+    public void deleteRefreshToken(Long userId){
+
+    }
 }
