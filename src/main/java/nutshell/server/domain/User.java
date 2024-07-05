@@ -27,9 +27,6 @@ public class User {
     @Column(name="serial_id", nullable = false)
     private String serialId;
 
-    @Column(name="google_token")
-    private String googleToken;
-
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -39,17 +36,15 @@ public class User {
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<Task> tasks;
 
+    @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<GoogleCalender> googleCalenders;
+
     @Builder
     public User(String name, String email, String serialId) {
         this.name = name;
         this.email = email;
         this.serialId = serialId;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateGoogleToken(String googleToken) {
-        this.googleToken = googleToken;
         this.updatedAt = LocalDateTime.now();
     }
 }
