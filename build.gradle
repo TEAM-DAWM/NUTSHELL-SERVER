@@ -49,9 +49,11 @@ dependencies {
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	//Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
 	// OpenFeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
 }
 
 ext {
@@ -62,6 +64,7 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+
 }
 
 tasks.named('test') {

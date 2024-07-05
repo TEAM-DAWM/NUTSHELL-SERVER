@@ -22,14 +22,11 @@ public class User {
     @Column(name="name", nullable = false)
     private String name;
 
-    @Column(name="email", nullable = false)
+    @Column(name="email", nullable = false, unique = true)
     private String email;
 
-    @Column(name="serial_id", nullable = false)
+    @Column(name="serial_id", nullable = false, unique = true)
     private String serialId;
-
-    @Column(name="google_token")
-    private String googleToken;
 
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -44,6 +41,9 @@ public class User {
     @Column(nullable = false)
     private SocialLoginPlatform socialLoginPlatform;
 
+    @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<GoogleCalender> googleCalenders;
+
     @Builder
     public User(String name, String email, String serialId) {
 
@@ -51,11 +51,6 @@ public class User {
         this.email = email;
         this.serialId = serialId;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateGoogleToken(String googleToken) {
-        this.googleToken = googleToken;
         this.updatedAt = LocalDateTime.now();
     }
 }
