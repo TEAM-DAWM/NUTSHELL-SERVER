@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.constant.AuthConstant;
 import nutshell.server.dto.auth.JwtTokensDto;
@@ -14,6 +15,7 @@ import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.UnAuthorizedErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -21,15 +23,21 @@ import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtUtil implements InitializingBean {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
+
     @Value("${jwt.access-token-expire-period}")
+    @Getter
     private Integer accessTokenExpirePeriod;
+
     @Value("${jwt.refresh-token-expire-period}")
     @Getter
     private Integer refreshTokenExpirePeriod;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     private Key key;
 
@@ -74,8 +82,4 @@ public class JwtUtil implements InitializingBean {
         return principal;
     }
 
-    // 로그아웃 메서드. redis 에서 refreshToken 삭제
-    public void deleteRefreshToken(Long userId){
-
-    }
 }

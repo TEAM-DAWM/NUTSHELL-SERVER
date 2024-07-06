@@ -1,7 +1,9 @@
-package nutshell.server.domain.user.dto;
+package nutshell.server.dto;
 
+import lombok.Builder;
 import nutshell.server.dto.auth.JwtTokensDto;
 
+@Builder
 public record SocialLoginResponse (
         Long userId,
         String userName,

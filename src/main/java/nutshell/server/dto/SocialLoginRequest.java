@@ -1,7 +1,9 @@
-package nutshell.server.domain.user.dto;
+package nutshell.server.dto;
 
+import lombok.Builder;
 import nutshell.server.domain.enums.SocialLoginPlatform;
 
+@Builder
 public record SocialLoginRequest (
         SocialLoginPlatform socialLoginPlatform,
         String code

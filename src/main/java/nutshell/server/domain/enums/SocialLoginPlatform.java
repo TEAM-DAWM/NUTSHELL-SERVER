@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum SocialLoginPlatform {
 
     GOOGLE("google"),
+    LOGOUT_STATUS("logout status")
     ;
 
     public final String value;

@@ -9,6 +9,7 @@ public record GoogleUserInfoResponse(
         String email,
         String emailVerified,
         String local
+
 ) {
     public static GoogleUserInfoResponse of(String sub, String name, String givenName, String familyName, String picture,
                                             String email, String emailVerified, String local) {
