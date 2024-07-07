@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockCreateDto;
+import nutshell.server.dto.timeBlock.request.TimeBlockUpdateDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.service.timeBlock.TimeBlockService;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,9 @@ public class TimeBlockController {
             @UserId final Long userId,
             @PathVariable final Long taskId,
             @PathVariable final Long timeBlockId,
-            @RequestBody final TimeBlockCreateDto timeBlockCreateDto
+            @RequestBody final TimeBlockUpdateDto timeBlockUpdateDto
     ) {
-        timeBlockService.update(userId, taskId, timeBlockId, timeBlockCreateDto);
+        timeBlockService.update(userId, taskId, timeBlockId, timeBlockUpdateDto);
         return ResponseEntity.noContent().build();
     }
 

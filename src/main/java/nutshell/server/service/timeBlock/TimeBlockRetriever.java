@@ -9,7 +9,6 @@ import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.repository.TimeBlockRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,12 +26,20 @@ public class TimeBlockRetriever {
         );
     }
     public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
-            final Long taskId,
-            final LocalDate date
+            final Task task,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
     ) {
-        LocalDateTime startTime = date.atStartOfDay();
-        LocalDateTime endTime = date.atTime(23, 59, 59);
-        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(taskId, startTime, endTime);
+        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime);
+    }
+
+    public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final Task task,
+            final Long id,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    ) {
+        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(task, id, startTime, endTime);
     }
 
     public List<TimeBlockDto> findAllByTaskIdAndTimeRange(

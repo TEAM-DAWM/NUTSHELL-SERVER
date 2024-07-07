@@ -11,16 +11,30 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
-    @Query(value="select count(*) > 0 from time_block t " +
-            "where t.task_id = :taskId and " +
-            "t.start_time between :startTime and :endTime or " +
-            "t.end_time between :startTime and :endTime limit 1",
-            nativeQuery=true)
+    @Query(value="select count(t) > 0 from TimeBlock t " +
+            "where t.task = :task and " +
+            "t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime"
+            )
     Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
-            final Long taskId,
+            final Task task,
             final LocalDateTime startTime,
             final LocalDateTime endTime
     );
+
+    @Query(value="select count(t) > 0 from TimeBlock t " +
+            "where t.task = :task and " +
+            "t.id != :id and " +
+            "(t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime)"
+    )
+    Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final Task task,
+            final Long id,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    );
+
 
     @Query("SELECT new nutshell.server.dto.timeBlock.response.TimeBlockDto(t.id, t.startTime, t.endTime) " +
             "FROM TimeBlock t " +

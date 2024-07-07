@@ -7,6 +7,7 @@ import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockCreateDto;
+import nutshell.server.dto.timeBlock.request.TimeBlockUpdateDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.dto.type.Status;
@@ -46,8 +47,9 @@ public class TimeBlockService {
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
-                task.getId(),
-                timeBlockCreateDto.startTime().toLocalDate()
+                task,
+                timeBlockCreateDto.startTime(),
+                timeBlockCreateDto.endTime()
         )) {
             throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
         }
@@ -81,12 +83,23 @@ public class TimeBlockService {
             final Long userId,
             final Long taskId,
             final Long timeBlockId,
-            final TimeBlockCreateDto timeBlockCreateDto
+            final TimeBlockUpdateDto timeBlockUpdateDto
     ){
+        if (timeBlockUpdateDto.startTime().isAfter(timeBlockUpdateDto.endTime())) {
+            throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
+        }
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         TimeBlock timeBlock = timeBlockRetriever.findByTaskAndId(task, timeBlockId);
-        timeBlockEditor.updateTime(timeBlock,timeBlockCreateDto.startTime(), timeBlockCreateDto.endTime());
+        if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+                task,
+                timeBlockId,
+                timeBlockUpdateDto.startTime(),
+                timeBlockUpdateDto.endTime()
+        )) {
+            throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+        }
+        timeBlockEditor.updateTime(timeBlock,timeBlockUpdateDto.startTime(), timeBlockUpdateDto.endTime());
     }
 
     @Transactional
