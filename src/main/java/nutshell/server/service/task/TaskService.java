@@ -35,7 +35,6 @@ public class TaskService {
                 .name(taskCreateDto.name())
                 .deadLine(deadLine)
                 .build();
-        taskSaver.save(task);
-        return task;
+        return taskSaver.save(task);
     }
 }
