@@ -39,7 +39,7 @@ public class Task {
     private LocalDate assignedDate;
 
     @Column(name = "completion_date")
-    private LocalDate completionDate;
+    private LocalDateTime completionDate;
 
     @Column(name = "reminder")
     private String reminder;
@@ -48,13 +48,13 @@ public class Task {
     private String repetition;
 
     @Column(name = "inprogress_date")
-    private LocalDate inprogressDate;
+    private LocalDateTime inprogressDate;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(targetEntity= User.class, fetch=FetchType.LAZY)
     @JoinColumn(name="user_id", nullable = false)
@@ -71,11 +71,10 @@ public class Task {
         this.description = description;
         this.status = Status.TODO;
         this.deadLine = deadLine;
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    @Builder
     public void updateTask(String name, String description, LocalDateTime deadLine) {
         if (name != null)
             this.name = name;
@@ -83,22 +82,22 @@ public class Task {
             this.description = description;
         if (deadLine != null)
             this.deadLine = deadLine;
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateAssignedDate(LocalDate assignedDate) {
         this.assignedDate = assignedDate;
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateStatus(Status status) {
         this.status = status;
         if(status == Status.IN_PROGRESS)
-            this.inprogressDate = LocalDate.now();
+            this.inprogressDate = LocalDateTime.now();
         else if(status == Status.DONE)
-            this.completionDate = LocalDate.now();
+            this.completionDate = LocalDateTime.now();
         else if(status == Status.DEFERRED)
             this.assignedDate = null;
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }
