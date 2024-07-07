@@ -12,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
     //권한이 없는 경우
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ForbiddenErrorCode> handleException(ForbiddenException e) {
-        log.error("handleException() in GlobalExceptionHandler throw ForbiddenException : {}", e.getMessage());
+        log.error("handleException() in GlobalExceptionHandler throw ForbiddenException : {}", e.getErrorCode().getMessage());
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode());
@@ -74,10 +75,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<UnAuthorizedErrorCode> handleException(UnAuthorizedException e) {
-        log.error("handleException() in GlobalExceptionHandler throw UnAuthorizedException : {}", e.getMessage());
+        log.error("handleException() in GlobalExceptionHandler throw UnAuthorizedException : {}", e.getErrorCode().getMessage());
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode());
     }
 
+    //@JsonFormat 오류
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<IllegalArgumentErrorCode> handleException(MethodArgumentTypeMismatchException e) {
+        log.error("handleException() in GlobalExceptionHandler throw MethodArgumentTypeMismatchException : {}", e.getMessage());
+        return ResponseEntity
+                .status(IllegalArgumentErrorCode.INVALID_DATE_FORMAT.getHttpStatus())
+                .body(IllegalArgumentErrorCode.INVALID_DATE_FORMAT);
+    }
 }

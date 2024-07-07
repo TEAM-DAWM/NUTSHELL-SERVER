@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,14 +16,11 @@ public class TimeBlock {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="date", nullable = false)
-    private LocalDate date;
-
     @Column(name="start_time", nullable = false)
-    private String startTime;
+    private LocalDateTime startTime;
 
     @Column(name="end_time", nullable = false)
-    private String endTime;
+    private LocalDateTime endTime;
 
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -37,8 +33,7 @@ public class TimeBlock {
     private Task task;
 
     @Builder
-    public TimeBlock(LocalDate date, String startTime, String endTime, Task task) {
-        this.date = date;
+    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, Task task) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.task = task;
@@ -46,8 +41,7 @@ public class TimeBlock {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @Builder
-    public void updateTimeBlock(String startTime, String endTime) {
+    public void updateTimeBlock(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.updatedAt = LocalDateTime.now();
