@@ -7,6 +7,6 @@ import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findBySerialIdAndEmail(String serialId, String email);
-    Optional<User> findById(Long userId);
+    Optional<User> findBySerialIdAndEmail(final String serialId, final String email);
+    Optional<User> findById(final Long userId);
 }

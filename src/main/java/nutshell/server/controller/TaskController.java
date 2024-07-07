@@ -18,7 +18,7 @@ public class TaskController {
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
             @UserId final Long userId,
-            @RequestBody TaskCreateDto taskCreateDto
+            @RequestBody final TaskCreateDto taskCreateDto
     ){
         taskService.createTask(userId, taskCreateDto);
         return ResponseEntity.ok().build();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class TaskSaver {
     private final TaskRepository taskRepository;
 
-    public void save(Task task) {
+    public void save(final Task task) {
         taskRepository.save(task);
     }
 }

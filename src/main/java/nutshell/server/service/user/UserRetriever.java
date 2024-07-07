@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserRetriever {
     private final UserRepository userRepository;
 
-    public User findByUserId(Long userId){
+    public User findByUserId(final Long userId){
         return userRepository.findById(userId).orElseThrow(
                 ()-> new NotFoundException(NotFoundErrorCode.NOT_FOUND_USER)
         );

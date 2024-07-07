@@ -11,7 +11,7 @@ public class TaskRemover {
 
     public final TaskRepository taskRepository;
 
-    public void deleteTask(Task task){
+    public void deleteTask(final Task task){
         taskRepository.delete(task);
     }
 
