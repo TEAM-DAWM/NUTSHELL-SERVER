@@ -6,6 +6,7 @@ import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +21,6 @@ public class TaskController {
             @UserId final Long userId,
             @RequestBody final TaskCreateDto taskCreateDto
     ){
-        taskService.createTask(userId, taskCreateDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.created(URI.create(taskService.createTask(userId, taskCreateDto).getId().toString())).build();
     }
 }

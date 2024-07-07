@@ -17,9 +17,11 @@ public class TaskService {
 
     private final UserRetriever userRetriever;
     private final TaskSaver taskSaver;
+    private final TaskRetriever taskRetriever;
+    private final TaskRemover taskRemover;
 
     @Transactional
-    public void createTask(final Long userId, final TaskCreateDto taskCreateDto){
+    public Task createTask(final Long userId, final TaskCreateDto taskCreateDto){
         User user = userRetriever.findByUserId(userId);
 
         LocalDateTime deadLine = taskCreateDto.deadLine() != null
@@ -34,5 +36,6 @@ public class TaskService {
                 .deadLine(deadLine)
                 .build();
         taskSaver.save(task);
+        return task;
     }
 }
