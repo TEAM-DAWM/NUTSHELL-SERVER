@@ -37,8 +37,6 @@ public class JwtUtil implements InitializingBean {
     @Getter
     private Integer refreshTokenExpirePeriod;
 
-    private final RedisTemplate<String, String> redisTemplate;
-
     private Key key;
 
     @Override

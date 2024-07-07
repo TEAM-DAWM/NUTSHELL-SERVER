@@ -9,5 +9,5 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TokenRemover {
     private final TokenRepository tokenRepository;
-    public void deleteToken(Token token) {tokenRepository.delete(token);}
+    public void deleteToken(final Token token) {tokenRepository.delete(token);}
 }

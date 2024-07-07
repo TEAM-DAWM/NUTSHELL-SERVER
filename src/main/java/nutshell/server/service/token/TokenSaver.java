@@ -9,5 +9,5 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TokenSaver {
     private final TokenRepository tokenRepository;
-    public void save(Token token) {tokenRepository.save(token);}
+    public void save(final Token token) {tokenRepository.save(token);}
 }

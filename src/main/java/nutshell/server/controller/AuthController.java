@@ -34,7 +34,7 @@ public class AuthController {
 
     @DeleteMapping("/auth/logout")
     public ResponseEntity<?> logout(
-            @UserId Long userId
+            @UserId final Long userId
     ){
        authService.logout(userId);
         return ResponseEntity.noContent().build();
