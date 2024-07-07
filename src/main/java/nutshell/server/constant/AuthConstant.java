@@ -10,7 +10,9 @@ public class AuthConstant {
             "/api/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/login/google",
+            "/auth/logout",
     };
     private AuthConstant() {
     }

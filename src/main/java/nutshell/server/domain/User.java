@@ -40,10 +40,10 @@ public class User {
     private List<GoogleCalender> googleCalenders;
 
     @Builder
-    public User(String name, String email, String serialId) {
+    public User(String serialId, String name, String email) {
+        this.serialId = serialId;
         this.name = name;
         this.email = email;
-        this.serialId = serialId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

@@ -14,6 +14,7 @@ public enum UnAuthorizedErrorCode implements DefaultErrorCode{
     TOKEN_EXPIRED_ERROR(HttpStatus.UNAUTHORIZED, "error", "만료된 토큰입니다."),
     TOKEN_UNSUPPORTED_ERROR(HttpStatus.UNAUTHORIZED, "error", "지원하지 않는 토큰입니다."),
     TOKEN_UNKNOWN_ERROR(HttpStatus.UNAUTHORIZED, "error", "알 수 없는 토큰입니다."),
+    REFRESH_TOKEN_INVALID_ERROR(HttpStatus.UNAUTHORIZED,"error","유효하지 않은 Refresh Token 입니다.")
     ;
 
     @JsonIgnore
