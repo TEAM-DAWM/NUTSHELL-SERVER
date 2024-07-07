@@ -1,13 +1,17 @@
 package nutshell.server.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
+import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockCreateDto;
+import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.service.timeBlock.TimeBlockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -44,5 +48,15 @@ public class TimeBlockController {
     ) {
         timeBlockService.delete(userId, taskId, timeBlockId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/time-blocks")
+    public ResponseEntity<TimeBlocksWithGooglesDto> getTimeBlocks(
+            @UserId final Long userId,
+            @RequestParam @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate startDate,
+            @RequestParam final Integer range,
+            @RequestBody(required = false) final CategoriesDto categoriesDto
+    ) {
+        return ResponseEntity.ok(timeBlockService.getTimeBlocksWithGoogle(userId, startDate, range, categoriesDto));
     }
 }
