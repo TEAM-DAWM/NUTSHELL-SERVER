@@ -90,7 +90,10 @@ public class GoogleCalenderService {
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
-                }).body(GoogleUserInfo.class);
+                }).onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
+                })
+        .body(GoogleUserInfo.class);
         assert data != null;
         GoogleCalender googleCalender = GoogleCalender.builder()
                 .user(user)
@@ -111,6 +114,8 @@ public class GoogleCalenderService {
                 .uri(GoogleCalenderConstant.GOOGLE_UNLINK_URL + googleCalender.getAccessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
+                }).onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
                 });
         googleCalenderRemover.remove(googleCalender);
@@ -209,6 +214,8 @@ public class GoogleCalenderService {
                 .body(body)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
+                }).onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
                 }).body(GoogleTokenDto.class);
         assert tokens != null;
