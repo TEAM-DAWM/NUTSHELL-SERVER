@@ -37,4 +37,11 @@ public class TaskService {
                 .build();
         return taskSaver.save(task);
     }
+
+    @Transactional
+    public void removeTask(final Long userId, final Long taskId) {
+        Task task = taskRetriever.findTaskByTaskId(taskId);
+        taskRemover.deleteTask(task);
+    }
+
 }

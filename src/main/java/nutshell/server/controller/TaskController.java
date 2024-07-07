@@ -15,12 +15,20 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    // Staging Area Task 생성
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
             @UserId final Long userId,
             @RequestBody final TaskCreateDto taskCreateDto
     ){
         return ResponseEntity.created(URI.create(taskService.createTask(userId, taskCreateDto).getId().toString())).build();
+    }
+
+    @DeleteMapping("/tasks/{taskId}")
+    public ResponseEntity<Void> deleteTask(
+            @UserId final Long userId,
+            @PathVariable(name = "taskId") final Long taskId
+    ) {
+        taskService.removeTask(userId, taskId);
+        return ResponseEntity.noContent().build();
     }
 }
