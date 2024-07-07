@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nutshell.server.domain.enums.SocialLoginPlatform;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,17 +36,12 @@ public class User {
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<Task> tasks;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SocialLoginPlatform socialLoginPlatform;
-
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<GoogleCalender> googleCalenders;
 
     @Builder
-    public User(String serialId, SocialLoginPlatform socialLoginPlatform, String name, String email) {
+    public User(String serialId, String name, String email) {
         this.serialId = serialId;
-        this.socialLoginPlatform = socialLoginPlatform;
         this.name = name;
         this.email = email;
         this.createdAt = LocalDateTime.now();

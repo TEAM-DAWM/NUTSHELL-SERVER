@@ -10,6 +10,7 @@ import nutshell.server.feign.google.GoogleUserInfoResponse;
 import nutshell.server.dto.auth.JwtTokensDto;
 import nutshell.server.feign.google.GoogleAuthClient;
 import nutshell.server.feign.google.GoogleInfoClient;
+import nutshell.server.service.token.TokenRemover;
 import nutshell.server.service.token.TokenRetriever;
 import nutshell.server.service.token.TokenSaver;
 import nutshell.server.service.user.UserRetriever;
@@ -41,8 +42,23 @@ public class AuthService {
     private final TokenRetriever tokenRetriever;
     private final UserRetriever userRetriever;
     private final TokenSaver tokenSaver;
+    private final TokenRemover tokenRemover;
 
-    // 유저 정보 받아온걸로 구글에 로그인
+    @Transactional
+    public JwtTokensDto reissueToken(final String refreshToken){
+        String token = refreshToken.substring("Bearer ".length());
+        Long userId = tokenRetriever.findMemberIdByRefreshToken(token);
+        JwtTokensDto tokensDto = jwtUtil.generateTokens(userId);
+        tokenSaver.save(Token.builder().id(userId).refreshToken(tokensDto.refreshToken()).build());
+        return tokensDto;
+    }
+
+    @Transactional
+    public void logout(final Long userId){
+        Token refreshToken = tokenRetriever.findById(userId);
+        tokenRemover.deleteToken(refreshToken);
+    }
+
     @Transactional
     public JwtTokensDto googleLogin(final String code)
             throws IOException{
@@ -64,6 +80,4 @@ public class AuthService {
         tokenSaver.save(Token.builder().id(user.getId()).refreshToken(jwtTokensDto.refreshToken()).build());
         return jwtTokensDto;
     }
-
-
 }
