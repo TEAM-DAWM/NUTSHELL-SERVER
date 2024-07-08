@@ -40,17 +40,41 @@
 
 &nbsp;
 
+
 ## 🍑 API docs
 [Nutshell API 명세서가 궁금하다면 클릭 ❗](https://topaz-work-262.notion.site/NutShell-API-909b69f8b9f348bc9bc6e76453ee4eb1?pvs=4)
 
 &nbsp;
 
-## 🌳 Commit Convention
+
+## 🍋 Code Convention
+[Nutshell 코드 컨벤션이 궁금하다면 클릭 ❗](https://www.notion.so/spring-code-convention-84696b53b3d04759a4d07a5257e2b729?pvs=21)
 
 
 &nbsp;
 
-## 📁 폴더 구조
+
+## 💌 Commit Convention
+```
+[<Prefix>] #<Issue_Number> <Description>
+```
+
+```
+[feat]: 새로운 기능 구현 
+[fix]: 수정 
+[refac]: 내부 로직은 변경하지 않고 기존의 코드를 개선하는 리팩토링 
+[chore]: 패키지 구조 수정, 의존성 추가, yml 수정, 파일 이동 등 작업
+[docs]: 문서 추가, 수정, 삭제 
+[init]: 프로젝트 초기 세팅 
+[test]: 테스트 코드 작성, 수정 
+[hotfix] : hotfix
+```
+
+&nbsp;
+
+
+## 🌱 ERD
+![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/8ae5ba95-0395-4774-b61e-7fdda9cb7cac)
 
 &nbsp;
 
@@ -68,3 +92,10 @@
 | Redis | 7.2.5 |
 | Orm | Spring Data JPA |
 
+&nbsp;
+
+## 📂 Directory
+
+```
+
+```
