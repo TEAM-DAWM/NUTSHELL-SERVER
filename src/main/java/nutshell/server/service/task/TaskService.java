@@ -9,6 +9,7 @@ import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -42,6 +43,14 @@ public class TaskService {
     public void removeTask(final Long userId, final Long taskId) {
         Task task = taskRetriever.findTaskByTaskId(taskId);
         taskRemover.deleteTask(task);
+    }
+
+    @Transactional
+    public void assignTask(final Long userId, final Long taskId){
+        User user = userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findTaskByTaskId(taskId);
+        task.updateAssignedDate(LocalDate.now());
+        taskSaver.save(task);
     }
 
 }
