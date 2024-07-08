@@ -12,18 +12,30 @@
 
 </div>
 
+&nbsp;
+
 ## 🌈 NUTSHELL Server Developers
 | 조민우 | 조영주 |
 | --- | --- |
 | 사진찍으면넣기 | 사진찍으면넣기 |
 | [@Minwoo Cho](https://github.com/minwoo0419) | [@becahu](https://github.com/choyeongju) |
 
+&nbsp;
 
 ## 🍑 API docs
 [Nutshell API 명세서가 궁금하다면 클릭 ❗](https://topaz-work-262.notion.site/NutShell-API-909b69f8b9f348bc9bc6e76453ee4eb1?pvs=4)
 
+&nbsp;
+
 ## 🌳 Commit Convention
-  
+
+
+&nbsp;
+
+## 📁 폴더 구조
+
+&nbsp;
+
 ## ✨Tech Stack
 | 사용기술 | 정보 |
 | --- | --- |
@@ -38,6 +50,3 @@
 | Redis | 7.2.5 |
 | Orm | Spring Data JPA |
 
-
-
-## 📁 폴더 구조
