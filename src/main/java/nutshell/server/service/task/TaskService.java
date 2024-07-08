@@ -50,7 +50,6 @@ public class TaskService {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findTaskByTaskId(taskId);
         task.updateAssignedDate(LocalDate.now());
-        taskSaver.save(task);
     }
 
 }
