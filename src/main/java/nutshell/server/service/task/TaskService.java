@@ -88,7 +88,7 @@ public class TaskService {
     }
 
     @Transactional
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void statusSchedule(){
         taskRetriever.findAllByStatusAndAssignedDateLessThan()
                 .forEach(
