@@ -15,10 +15,28 @@
 &nbsp;
 
 ## 🌈 NUTSHELL Server Developers
-| 조민우 | 조영주 |
-| --- | --- |
-| 사진찍으면넣기 | 사진찍으면넣기 |
-| [@Minwoo Cho](https://github.com/minwoo0419) | [@becahu](https://github.com/choyeongju) |
+<!DOCTYPE html>
+</head>
+<body>
+
+<table>
+    <tr>
+        <th>조민우</th>
+        <th>조영주</th>
+    </tr>
+    <tr>
+        <td>Entity 초기 세팅<br>CI/CD 구축<br>ERD 및 DB 설계<br>Google Calendar 연동</td>
+        <td>AWS 서버 구축<br>CI/CD 구축<br>ERD 및 DB 설계<br>Google Login 연동</td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/minwoo0419">@Minwoo Cho</a></td>
+        <td><a href="https://github.com/choyeongju">@becahu</a></td>
+    </tr>
+</table>
+
+</body>
+</html>
+
 
 &nbsp;
 
