@@ -3,6 +3,7 @@ package nutshell.server.service.task;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.User;
+import nutshell.server.dto.task.TaskAssignedDto;
 import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.dto.task.TaskDto;
 import nutshell.server.service.user.UserRetriever;
@@ -19,6 +20,7 @@ public class TaskService {
     private final TaskSaver taskSaver;
     private final TaskRetriever taskRetriever;
     private final TaskRemover taskRemover;
+    private final TaskUpdater taskUpdater;
 
     @Transactional
     public Task createTask(final Long userId, final TaskCreateDto taskCreateDto){
@@ -46,6 +48,18 @@ public class TaskService {
         taskRemover.deleteTask(task);
     }
 
+
+    @Transactional
+    public void assignTask(final Long userId, final Long taskId, final TaskAssignedDto taskAssignedDto){
+        if (taskAssignedDto == null) {
+            throw new IllegalArgumentException("TaskAssignedDto is null");
+        }
+        User user = userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findTaskByTaskId(taskId);
+        LocalDate targetDate = taskAssignedDto.targetDate();
+        taskUpdater.updateAssignedTask(task, targetDate);
+    }
+  
     public TaskDto getTaskDetails(final Long userId, final Long taskId){
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findTaskByTaskId(taskId);
