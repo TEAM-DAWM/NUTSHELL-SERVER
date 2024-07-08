@@ -39,7 +39,7 @@ public class TaskController {
             @PathVariable(name="taskId") final Long taskId,
             @RequestBody final TaskAssignedDto taskAssignedDto
     ){
-        taskService.assignTask(userId, taskId);
+        taskService.assignTask(userId, taskId, taskAssignedDto);
         return ResponseEntity.noContent().build();
     }
 }
