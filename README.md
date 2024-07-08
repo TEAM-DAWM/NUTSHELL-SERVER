@@ -42,13 +42,13 @@
 
 
 ## 🍑 API docs
-[Nutshell API 명세서가 궁금하다면 클릭 ❗](https://topaz-work-262.notion.site/NutShell-API-909b69f8b9f348bc9bc6e76453ee4eb1?pvs=4)
+[Nutshell API 명세서 보고싶어요 ❗](https://topaz-work-262.notion.site/NutShell-API-909b69f8b9f348bc9bc6e76453ee4eb1?pvs=4)
 
 &nbsp;
 
 
 ## 🍋 Code Convention
-[Nutshell 코드 컨벤션이 궁금하다면 클릭 ❗](https://www.notion.so/spring-code-convention-84696b53b3d04759a4d07a5257e2b729?pvs=21)
+[Nutshell 코드 컨벤션 보고싶어요 ❗](https://www.notion.so/spring-code-convention-84696b53b3d04759a4d07a5257e2b729?pvs=21)
 
 
 &nbsp;
