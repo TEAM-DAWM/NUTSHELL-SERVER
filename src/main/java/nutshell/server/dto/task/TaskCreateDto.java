@@ -1,7 +1,6 @@
 package nutshell.server.dto.task;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record TaskCreateDto(
         String name,
@@ -9,7 +8,7 @@ public record TaskCreateDto(
 
 ) {
     public record DeadLine(
-            @JsonFormat(pattern = "yyyy-MM-dd'T'hh:mm", timezone = "Asia/Seoul")
-            LocalDateTime date,
+            @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+            LocalDate date,
             String time){ }
 }
