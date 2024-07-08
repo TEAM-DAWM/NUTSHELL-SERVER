@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record TaskResponse(
         Long id,
         String name,
-        @JsonFormat(pattern = "hh-MM-dd'T'hh-mm", timezone = "Asia/Seoul")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'hh-mm", timezone = "Asia/Seoul")
         LocalDateTime deadLine,
         String status
 ) {
