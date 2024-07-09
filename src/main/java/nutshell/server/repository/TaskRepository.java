@@ -1,8 +1,11 @@
 package nutshell.server.repository;
 
 import nutshell.server.domain.Task;
+import nutshell.server.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
+import java.util.Optional;
 
+public interface TaskRepository extends JpaRepository<Task, Long> {
+    Optional<Task> findByUserAndId(final User user, final Long id);
 }
