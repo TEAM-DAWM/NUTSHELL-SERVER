@@ -74,7 +74,8 @@
 
 
 ## 🌱 ERD
-![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/8ae5ba95-0395-4774-b61e-7fdda9cb7cac)
+![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/bd5c1c87-367c-403a-b1a2-070c5c1c0a82)
+
 
 &nbsp;
 
