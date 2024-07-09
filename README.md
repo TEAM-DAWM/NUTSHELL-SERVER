@@ -17,8 +17,7 @@
 
 ## 🌈 NUTSHELL Server Developers
 <!DOCTYPE html>
-</head>
-<body>
+
 
 <table>
     <tr>
@@ -26,8 +25,24 @@
         <th>조영주</th>
     </tr>
     <tr>
-        <td>Entity 초기 세팅<br>CI/CD 구축<br>ERD 및 DB 설계<br>Google Calendar 연동</td>
-        <td>AWS 서버 구축<br>CI/CD 구축<br>ERD 및 DB 설계<br>Google Login 연동</td>
+        <td><img width="300px"src="https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/f9f469c9-6009-4e04-b211-8c88c02ed5b9"
+></td>
+        <td><img width="300px" src="https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/077d35e0-e918-4315-9471-5c4627d5b433"
+></td>
+    </tr>
+    <tr>
+        <td>
+            Entity 초기 세팅<br>
+            CI/CD 구축<br>
+            ERD 및 DB 설계<br>
+            Google Calendar 연동
+        </td>
+        <td>
+            AWS 서버 구축<br>
+            CI/CD 구축<br>
+            ERD 및 DB 설계<br>
+            Google Login 연동
+        </td>
     </tr>
     <tr>
         <td><a href="https://github.com/minwoo0419">@Minwoo Cho</a></td>
@@ -37,6 +52,7 @@
 
 </body>
 </html>
+
 
 
 &nbsp;
