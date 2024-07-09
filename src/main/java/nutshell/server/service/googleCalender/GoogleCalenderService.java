@@ -184,6 +184,7 @@ public class GoogleCalenderService {
                         .name(event.getSummary())
                         .startTime(start)
                         .endTime(end)
+                        .allDay(!start.toLocalDate().equals(end.toLocalDate()))
                         .build();
                 googleScheduleDtoList.add(googleScheduleDto);
             }
