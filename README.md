@@ -73,12 +73,6 @@
 &nbsp;
 
 
-## 🌱 ERD
-![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/bd5c1c87-367c-403a-b1a2-070c5c1c0a82)
-
-
-&nbsp;
-
 ## ✨Tech Stack
 | 사용기술 | 정보 |
 | --- | --- |
@@ -92,6 +86,18 @@
 | API Docs | Notion, Swagger |
 | Redis | 7.2.5 |
 | Orm | Spring Data JPA |
+
+&nbsp;
+
+## 💻 System Architecture
+![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/84323db3-52f2-474f-bf5b-b3f3d6346c6e)
+
+
+&nbsp;
+
+
+## 🌱 ERD
+![image](https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/bd5c1c87-367c-403a-b1a2-070c5c1c0a82)
 
 &nbsp;
 
