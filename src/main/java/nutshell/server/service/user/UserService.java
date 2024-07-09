@@ -16,7 +16,9 @@ public class UserService {
     public UserDto getUser(final Long userId){
         User user = userRetriever.findById(userId);
         return UserDto.builder()
-                .name(user.getName())
+                .givenName(user.getGivenName())
+                .familyName(user.getFamilyName())
+                .image(user.getImage())
                 .email(user.getEmail())
                 .googleCalenders(
                         user.getGoogleCalendars().stream()

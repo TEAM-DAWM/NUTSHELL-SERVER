@@ -18,8 +18,14 @@ public class User {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name", nullable = false)
-    private String name;
+    @Column(name="given_name", nullable = false)
+    private String givenName;
+
+    @Column(name="family_name", nullable = false)
+    private String familyName;
+
+    @Column(name="image", nullable = false)
+    private String image;
 
     @Column(name="email", nullable = false, unique = true)
     private String email;
@@ -40,8 +46,11 @@ public class User {
     private List<GoogleCalendar> googleCalendars;
 
     @Builder
-    public User(String name, String email, String serialId) {
-        this.name = name;
+
+    public User(String givenName, String familyName, String image, String email, String serialId) {
+        this.givenName = givenName;
+        this.familyName = familyName;
+        this.image = image;
         this.email = email;
         this.serialId = serialId;
         this.createdAt = LocalDateTime.now();
