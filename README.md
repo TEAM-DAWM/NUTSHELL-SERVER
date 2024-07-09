@@ -3,14 +3,15 @@
 # 🌰 Nutshell 🌰
 </div>
 <p align="center">
-  <img src="https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/35508738-b601-47f6-899d-9a5664f229d0"
-" width=250px>
+  <img src="https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/128598386/e97076fc-c226-41ac-a989-0a74b602defc"
+" width=750px>
 </p>
 <div align="center">
   
         한 눈에 보는 내 삶의 대시보드
 
 </div>
+
 
 &nbsp;
 
