@@ -2,6 +2,7 @@ package nutshell.server.repository;
 
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TimeBlock;
+import nutshell.server.domain.User;
 import nutshell.server.dto.timeBlock.response.TimeBlockDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,25 +13,35 @@ import java.util.Optional;
 
 public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
     @Query(value="select count(t) > 0 from TimeBlock t " +
-            "where t.task = :task and " +
+            "where t.task.user = :user and " +
             "t.startTime between :startTime and :endTime or " +
             "t.endTime between :startTime and :endTime"
             )
-    Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
-            final Task task,
+    Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(
+            final User user,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    );
+
+    @Query(value="select count(t) > 0 from TimeBlock t " +
+            "where t.task.user = :user and " +
+            "t.id != :id and " +
+            "(t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime)"
+    )
+    Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final User user,
+            final Long id,
             final LocalDateTime startTime,
             final LocalDateTime endTime
     );
 
     @Query(value="select count(t) > 0 from TimeBlock t " +
             "where t.task = :task and " +
-            "t.id != :id and " +
-            "(t.startTime between :startTime and :endTime or " +
-            "t.endTime between :startTime and :endTime)"
-    )
-    Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            "t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime")
+    Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
             final Task task,
-            final Long id,
             final LocalDateTime startTime,
             final LocalDateTime endTime
     );

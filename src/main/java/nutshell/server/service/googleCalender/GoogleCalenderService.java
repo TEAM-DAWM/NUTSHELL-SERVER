@@ -66,7 +66,7 @@ public class GoogleCalenderService {
         }
     }
     @Transactional
-    public void getToken(final String code, final Long userId) {
+    public GoogleCalender getToken(final String code, final Long userId) {
         User user = userRetriever.findById(userId);
         RestClient restClient = RestClient.create();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -102,7 +102,7 @@ public class GoogleCalenderService {
                 .serialId(data.id())
                 .email(data.email())
                 .build();
-        googleCalenderSaver.save(googleCalender);
+        return googleCalenderSaver.save(googleCalender);
     }
 
     @Transactional

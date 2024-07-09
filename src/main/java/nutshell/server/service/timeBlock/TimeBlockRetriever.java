@@ -3,6 +3,7 @@ package nutshell.server.service.timeBlock;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TimeBlock;
+import nutshell.server.domain.User;
 import nutshell.server.dto.timeBlock.response.TimeBlockDto;
 import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.NotFoundErrorCode;
@@ -25,21 +26,29 @@ public class TimeBlockRetriever {
                 () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TIME_BLOCK)
         );
     }
+    public Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(
+            final User user,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    ) {
+        return timeBlockRepository.existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(user, startTime, endTime);
+    }
+
+    public Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final User user,
+            final Long id,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    ) {
+        return timeBlockRepository.existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(user, id, startTime, endTime);
+    }
+
     public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
             final Task task,
             final LocalDateTime startTime,
             final LocalDateTime endTime
     ) {
         return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime);
-    }
-
-    public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
-            final Task task,
-            final Long id,
-            final LocalDateTime startTime,
-            final LocalDateTime endTime
-    ) {
-        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(task, id, startTime, endTime);
     }
 
     public List<TimeBlockDto> findAllByTaskIdAndTimeRange(

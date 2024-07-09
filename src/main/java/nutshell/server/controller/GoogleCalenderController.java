@@ -6,6 +6,8 @@ import nutshell.server.service.googleCalender.GoogleCalenderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -18,8 +20,8 @@ public class GoogleCalenderController {
             @UserId final Long userId,
             @RequestParam final String code
     ) {
-        googleCalenderService.getToken(code, userId);
-        return ResponseEntity.ok().build();
+        URI uri = URI.create(googleCalenderService.getToken(code, userId).getId().toString());
+        return ResponseEntity.created(uri).build();
     }
 
     @DeleteMapping("/google/calenders/{googleCalenderId}")

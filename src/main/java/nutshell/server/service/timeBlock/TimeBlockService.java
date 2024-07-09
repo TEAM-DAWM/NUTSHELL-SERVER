@@ -46,12 +46,19 @@ public class TimeBlockService {
         }
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-        if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
-                task,
+        if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(    //수정 필요
+                user,
                 timeBlockCreateDto.startTime(),
                 timeBlockCreateDto.endTime()
         )) {
             throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+        }
+        if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
+                task,
+                timeBlockCreateDto.startTime().toLocalDate().atStartOfDay(),
+                timeBlockCreateDto.startTime().toLocalDate().atTime(23,59,59)
+        )) {
+            throw new BusinessException(BusinessErrorCode.DAY_CONFLICT);
         }
         if (task.getStatus() == Status.DONE){
             //완료된 날짜보다 endTime이 더 뒤라면
@@ -91,8 +98,8 @@ public class TimeBlockService {
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         TimeBlock timeBlock = timeBlockRetriever.findByTaskAndId(task, timeBlockId);
-        if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
-                task,
+        if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+                user,
                 timeBlockId,
                 timeBlockUpdateDto.startTime(),
                 timeBlockUpdateDto.endTime()
