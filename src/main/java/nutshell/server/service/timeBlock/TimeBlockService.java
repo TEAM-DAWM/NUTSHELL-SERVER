@@ -41,18 +41,21 @@ public class TimeBlockService {
             final Long taskId,
             final TimeBlockCreateDto timeBlockCreateDto
     ) {
+        //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockCreateDto.startTime().isAfter(timeBlockCreateDto.endTime())) {
             throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
         }
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-        if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(    //수정 필요
+        //시작시간과 끝나는 시간 사이에 다른 타임블록이 있다면
+        if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(
                 user,
                 timeBlockCreateDto.startTime(),
                 timeBlockCreateDto.endTime()
         )) {
             throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
         }
+        //timeBlock생성일에 이미 같은 task의 timeBlock이 있다면
         if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
                 task,
                 timeBlockCreateDto.startTime().toLocalDate().atStartOfDay(),
@@ -92,12 +95,14 @@ public class TimeBlockService {
             final Long timeBlockId,
             final TimeBlockUpdateDto timeBlockUpdateDto
     ){
+        //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockUpdateDto.startTime().isAfter(timeBlockUpdateDto.endTime())) {
             throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
         }
         User user = userRetriever.findById(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         TimeBlock timeBlock = timeBlockRetriever.findByTaskAndId(task, timeBlockId);
+        //자기자신을 제외한 다른 타임블록 중 시작시간과 끝나는 시간 사이에 다른 타임블록이 있다면
         if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
                 user,
                 timeBlockId,
