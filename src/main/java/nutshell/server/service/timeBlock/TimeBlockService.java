@@ -126,7 +126,6 @@ public class TimeBlockService {
         timeBlockRemover.remove(timeBlock);
     }
 
-    @Transactional
     public TimeBlocksWithGooglesDto getTimeBlocksWithGoogle(
             final Long userId,
             final LocalDate startDate,
