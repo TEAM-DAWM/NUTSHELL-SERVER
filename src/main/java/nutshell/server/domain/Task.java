@@ -55,6 +55,8 @@ public class Task {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    @Column(name = "updated_status_at", nullable = false)
+    private LocalDateTime updatedStatusAt;
 
     @ManyToOne(targetEntity= User.class, fetch=FetchType.LAZY)
     @JoinColumn(name="user_id", nullable = false)
@@ -73,6 +75,7 @@ public class Task {
         this.deadLine = deadLine;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.updatedStatusAt = LocalDateTime.now();
     }
 
     public void updateTask(String name, String description, LocalDateTime deadLine) {
@@ -92,12 +95,17 @@ public class Task {
 
     public void updateStatus(Status status) {
         this.status = status;
-        if(status == Status.IN_PROGRESS)
+        if(status == Status.IN_PROGRESS) {
             this.inprogressDate = LocalDateTime.now();
+            this.completionDate = null;
+        }
         else if(status == Status.DONE)
             this.completionDate = LocalDateTime.now();
-        else if(status == Status.DEFERRED)
+        else if(status == Status.DEFERRED) {
             this.assignedDate = null;
+            this.completionDate = null;
+        }
         this.updatedAt = LocalDateTime.now();
+        this.updatedStatusAt = LocalDateTime.now();
     }
 }
