@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
-public class GoogleCalender {
+public class GoogleCalendar {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -39,7 +39,7 @@ public class GoogleCalender {
     private User user;
 
     @Builder
-    public GoogleCalender(String accessToken, String refreshToken, String email, String serialId, User user) {
+    public GoogleCalendar(String accessToken, String refreshToken, String email, String serialId, User user) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.serialId = serialId;

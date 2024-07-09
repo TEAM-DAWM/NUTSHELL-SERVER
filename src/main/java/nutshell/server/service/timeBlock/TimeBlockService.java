@@ -13,7 +13,7 @@ import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
-import nutshell.server.service.googleCalender.GoogleCalenderService;
+import nutshell.server.service.googleCalendar.GoogleCalendarService;
 import nutshell.server.service.task.TaskUpdater;
 import nutshell.server.service.task.TaskRetriever;
 import nutshell.server.service.user.UserRetriever;
@@ -34,7 +34,7 @@ public class TimeBlockService {
     private final TaskRetriever taskRetriever;
     private final TaskUpdater taskUpdater;
     private final UserRetriever userRetriever;
-    private final GoogleCalenderService googleCalenderService;
+    private final GoogleCalendarService googleCalendarService;
     @Transactional
     public TimeBlock create(
             final Long userId,
@@ -139,7 +139,7 @@ public class TimeBlockService {
                                 .timeBlocks(timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime))
                                 .build()
                 ).toList();
-        List<GoogleSchedulesDto> googles = googleCalenderService.getGoogleCalenders(userId, startDate, range, categoriesDto);
+        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalenders(userId, startDate, range, categoriesDto);
         return TimeBlocksWithGooglesDto.builder()
                 .tasks(tasks)
                 .googles(googles)

@@ -1,6 +1,6 @@
 package nutshell.server.constant;
 
-public class GoogleCalenderConstant {
+public class GoogleCalendarConstant {
     public static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
     public static final String GOOGLE_UNLINK_URL = "https://oauth2.googleapis.com/revoke?token=";
     public static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo";

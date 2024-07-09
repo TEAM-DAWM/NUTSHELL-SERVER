@@ -19,7 +19,7 @@ public class UserService {
                 .name(user.getName())
                 .email(user.getEmail())
                 .googleCalenders(
-                        user.getGoogleCalenders().stream()
+                        user.getGoogleCalendars().stream()
                                 .map(googleCalender -> GoogleEmailDto.builder()
                                         .id(googleCalender.getId())
                                         .email(googleCalender.getEmail())

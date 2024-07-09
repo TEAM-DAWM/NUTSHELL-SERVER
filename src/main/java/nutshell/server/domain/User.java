@@ -37,7 +37,7 @@ public class User {
     private List<Task> tasks;
 
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<GoogleCalender> googleCalenders;
+    private List<GoogleCalendar> googleCalendars;
 
     @Builder
     public User(String name, String email, String serialId) {

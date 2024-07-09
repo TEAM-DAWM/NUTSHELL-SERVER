@@ -1,4 +1,4 @@
-package nutshell.server.service.googleCalender;
+package nutshell.server.service.googleCalendar;
 
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
@@ -11,8 +11,8 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nutshell.server.constant.GoogleCalenderConstant;
-import nutshell.server.domain.GoogleCalender;
+import nutshell.server.constant.GoogleCalendarConstant;
+import nutshell.server.domain.GoogleCalendar;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.GoogleScheduleDto;
@@ -43,12 +43,12 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GoogleCalenderService {
+public class GoogleCalendarService {
     private final UserRetriever userRetriever;
-    private final GoogleCalenderSaver googleCalenderSaver;
-    private final GoogleCalenderRetriever googleCalenderRetriever;
-    private final GoogleCalenderUpdater googleCalenderUpdater;
-    private final GoogleCalenderRemover googleCalenderRemover;
+    private final GoogleCalendarSaver googleCalendarSaver;
+    private final GoogleCalendarRetriever googleCalendarRetriever;
+    private final GoogleCalendarUpdater googleCalendarUpdater;
+    private final GoogleCalendarRemover googleCalendarRemover;
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final NetHttpTransport HTTP_TRANSPORT;
@@ -66,17 +66,17 @@ public class GoogleCalenderService {
         }
     }
     @Transactional
-    public GoogleCalender getToken(final String code, final Long userId) {
+    public GoogleCalendar getToken(final String code, final Long userId) {
         User user = userRetriever.findById(userId);
         RestClient restClient = RestClient.create();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add(GoogleCalenderConstant.CLIENT_ID, CLIENT_ID);
-        body.add(GoogleCalenderConstant.CLIENT_SECRET, CLIENT_SECRET);
-        body.add(GoogleCalenderConstant.REDIRECT_URI, REDIRECT_URI);
-        body.add(GoogleCalenderConstant.CODE, code);
-        body.add(GoogleCalenderConstant.GRANT_TYPE, GoogleCalenderConstant.AUTHORIZATION_CODE);
+        body.add(GoogleCalendarConstant.CLIENT_ID, CLIENT_ID);
+        body.add(GoogleCalendarConstant.CLIENT_SECRET, CLIENT_SECRET);
+        body.add(GoogleCalendarConstant.REDIRECT_URI, REDIRECT_URI);
+        body.add(GoogleCalendarConstant.CODE, code);
+        body.add(GoogleCalendarConstant.GRANT_TYPE, GoogleCalendarConstant.AUTHORIZATION_CODE);
         GoogleTokenDto tokens = restClient.post()
-                .uri(GoogleCalenderConstant.GOOGLE_TOKEN_URL)
+                .uri(GoogleCalendarConstant.GOOGLE_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)
                 .retrieve()
@@ -85,8 +85,8 @@ public class GoogleCalenderService {
                 }).body(GoogleTokenDto.class);
         assert tokens != null;
         GoogleUserInfo data = restClient.get()
-                .uri(GoogleCalenderConstant.GOOGLE_USER_INFO_URL)
-                .header(GoogleCalenderConstant.AUTHORIZATION, GoogleCalenderConstant.BEARER + tokens.accessToken())
+                .uri(GoogleCalendarConstant.GOOGLE_USER_INFO_URL)
+                .header(GoogleCalendarConstant.AUTHORIZATION, GoogleCalendarConstant.BEARER + tokens.accessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
@@ -95,30 +95,30 @@ public class GoogleCalenderService {
                 })
         .body(GoogleUserInfo.class);
         assert data != null;
-        GoogleCalender googleCalender = GoogleCalender.builder()
+        GoogleCalendar googleCalendar = GoogleCalendar.builder()
                 .user(user)
                 .accessToken(tokens.accessToken())
                 .refreshToken(tokens.refreshToken())
                 .serialId(data.id())
                 .email(data.email())
                 .build();
-        return googleCalenderSaver.save(googleCalender);
+        return googleCalendarSaver.save(googleCalendar);
     }
 
     @Transactional
     public void unlink(final Long userId, final Long googleCalenderId){
         User user = userRetriever.findById(userId);
-        GoogleCalender googleCalender = googleCalenderRetriever.findByIdAndUser(googleCalenderId, user);
+        GoogleCalendar googleCalendar = googleCalendarRetriever.findByIdAndUser(googleCalenderId, user);
         RestClient restClient = RestClient.create();
         restClient.post()
-                .uri(GoogleCalenderConstant.GOOGLE_UNLINK_URL + googleCalender.getAccessToken())
+                .uri(GoogleCalendarConstant.GOOGLE_UNLINK_URL + googleCalendar.getAccessToken())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
                 }).onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
                 });
-        googleCalenderRemover.remove(googleCalender);
+        googleCalendarRemover.remove(googleCalendar);
     }
 
     @Transactional
@@ -129,9 +129,9 @@ public class GoogleCalenderService {
             final CategoriesDto categoriesDto
     ) {
         User user = userRetriever.findById(userId);
-        List<GoogleCalender> googleCalenders = googleCalenderRetriever.findAllByUser(user);
+        List<GoogleCalendar> googleCalendars = googleCalendarRetriever.findAllByUser(user);
         List<GoogleSchedulesDto> schedules = new ArrayList<>();
-        googleCalenders.forEach(
+        googleCalendars.forEach(
                 googleCalender -> {
                     try {
                         schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
@@ -150,7 +150,7 @@ public class GoogleCalenderService {
     }
 
     private static List<GoogleSchedulesDto> getEvents(
-            final GoogleCalender googleCalender,
+            final GoogleCalendar googleCalendar,
             final LocalDate startDate,
             final Integer range,
             final CategoriesDto categoriesDto
@@ -160,9 +160,9 @@ public class GoogleCalenderService {
                 .setJsonFactory(JSON_FACTORY)
                 .setTransport(HTTP_TRANSPORT)
                 .build()
-                .setAccessToken(googleCalender.getAccessToken());
+                .setAccessToken(googleCalendar.getAccessToken());
         Calendar calender = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(GoogleCalenderConstant.APPLICATION_NAME)
+                .setApplicationName(GoogleCalendarConstant.APPLICATION_NAME)
                 .build();
         CalendarList calendarList = calender.calendarList().list().execute();
         List<CalendarListEntry> items =  calendarList.getItems();
@@ -202,15 +202,15 @@ public class GoogleCalenderService {
         return schedules;
     }
 
-    private void reissue(final GoogleCalender googleCalender) {
+    private void reissue(final GoogleCalendar googleCalendar) {
         RestClient restClient = RestClient.create();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add(GoogleCalenderConstant.CLIENT_ID, CLIENT_ID);
-        body.add(GoogleCalenderConstant.CLIENT_SECRET, CLIENT_SECRET);
-        body.add(GoogleCalenderConstant.REFRESH_TOKEN, googleCalender.getRefreshToken());
-        body.add(GoogleCalenderConstant.GRANT_TYPE, GoogleCalenderConstant.REFRESH_TOKEN);
+        body.add(GoogleCalendarConstant.CLIENT_ID, CLIENT_ID);
+        body.add(GoogleCalendarConstant.CLIENT_SECRET, CLIENT_SECRET);
+        body.add(GoogleCalendarConstant.REFRESH_TOKEN, googleCalendar.getRefreshToken());
+        body.add(GoogleCalendarConstant.GRANT_TYPE, GoogleCalendarConstant.REFRESH_TOKEN);
         GoogleTokenDto tokens = restClient.post()
-                .uri(GoogleCalenderConstant.GOOGLE_TOKEN_URL)
+                .uri(GoogleCalendarConstant.GOOGLE_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)
                 .retrieve()
@@ -220,7 +220,7 @@ public class GoogleCalenderService {
                     throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_ERROR);
                 }).body(GoogleTokenDto.class);
         assert tokens != null;
-        googleCalenderUpdater.updateTokens(googleCalender, tokens.accessToken());
+        googleCalendarUpdater.updateTokens(googleCalendar, tokens.accessToken());
     }
 
     private static LocalDateTime getLocalDateTime(final EventDateTime event) {
