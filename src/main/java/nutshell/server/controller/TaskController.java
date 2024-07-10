@@ -58,7 +58,7 @@ public class TaskController {
     public ResponseEntity<Void> editStatus(
             @UserId final Long userId,
             @PathVariable final Long taskId,
-            @RequestBody TaskStatusDto taskStatusDto
+            @RequestBody final TaskStatusDto taskStatusDto
     ){
         taskService.editStatus(userId, taskId, taskStatusDto);
         return ResponseEntity.noContent().build();
