@@ -18,9 +18,9 @@ public class UserRetriever {
           );
     }
 
-    public User findBySerialIdAndEmailOrGet(final String serialId, final String name, final String email){
+    public User findBySerialIdAndEmailOrGet(final String serialId, final String givenName, final String familyName, final String picture, final String email){
          return userRepository.findBySerialIdAndEmail(serialId, email).orElseGet(
-                ()-> userRepository.save(User.builder().serialId(serialId).name(name).email(email).build())
+                ()-> userRepository.save(User.builder().serialId(serialId).givenName(givenName).familyName(familyName).image(picture).email(email).build())
 
         );
     }
