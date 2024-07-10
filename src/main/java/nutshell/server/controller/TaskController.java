@@ -2,10 +2,7 @@ package nutshell.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.task.TaskAssignedDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TaskDetailEditDto;
-import nutshell.server.dto.task.TaskDto;
+import nutshell.server.dto.task.*;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,9 +46,10 @@ public class TaskController {
     @GetMapping("/tasks/{taskId}")
     public ResponseEntity<TaskDto> getTask(
             @UserId final Long userId,
-            @PathVariable final Long taskId
+            @PathVariable final Long taskId,
+            @RequestBody final TargetDateDto targetDateDto
     ){
-        return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId));
+        return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
     }
 
     @PatchMapping("/tasks/{taskId}")
