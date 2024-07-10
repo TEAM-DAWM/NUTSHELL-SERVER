@@ -63,6 +63,9 @@ public class Task {
     @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<TimeBlock> timeBlocks;
 
+    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<Defer> defers;
+
 
     @Builder
     public Task(User user, String name, String description, LocalDateTime deadLine) {
@@ -94,7 +97,7 @@ public class Task {
         this.status = status;
         if(status == Status.IN_PROGRESS)
             this.inprogressDate = LocalDateTime.now();
-        else if(status == Status.DONE)
+        else if (status == Status.DONE)
             this.completionDate = LocalDateTime.now();
         else if(status == Status.DEFERRED)
             this.assignedDate = null;

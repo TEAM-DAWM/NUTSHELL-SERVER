@@ -75,7 +75,7 @@ public class AuthService {
         GoogleUserInfoResponse googleUserInfoResponse = googleInfoClient.googleInfo( // 구글 사용자 정보 API를 호출
                 "Bearer " + googleTokenResponse.accessToken());
 
-        User user = userRetriever.findBySerialIdAndEmailOrGet(googleUserInfoResponse.sub(), googleUserInfoResponse.name(), googleUserInfoResponse.email());
+        User user = userRetriever.findBySerialIdAndEmailOrGet(googleUserInfoResponse.sub(), googleUserInfoResponse.givenName(), googleUserInfoResponse.familyName(), googleUserInfoResponse.picture(), googleUserInfoResponse.email());
         JwtTokensDto jwtTokensDto = jwtUtil.generateTokens(user.getId());
         tokenSaver.save(Token.builder().id(user.getId()).refreshToken(jwtTokensDto.refreshToken()).build());
         return jwtTokensDto;

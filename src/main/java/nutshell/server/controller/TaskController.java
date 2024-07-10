@@ -6,6 +6,7 @@ import nutshell.server.dto.task.TaskAssignedDto;
 import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.dto.task.TaskDetailEditDto;
 import nutshell.server.dto.task.TaskDto;
+import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,11 +50,20 @@ public class TaskController {
     @GetMapping("/tasks/{taskId}")
     public ResponseEntity<TaskDto> getTask(
             @UserId final Long userId,
-            @PathVariable Long taskId
+            @PathVariable final Long taskId
     ){
         return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId));
     }
 
+    @PatchMapping("tasks/{taskId}/status")
+    public ResponseEntity<Void> editStatus(
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestBody final TaskStatusDto taskStatusDto
+    ){
+        taskService.editStatus(userId, taskId, taskStatusDto);
+      }
+  
     @PatchMapping("/tasks/{taskId}")
     public ResponseEntity<Void> editDetail(
             @UserId final Long userId,
