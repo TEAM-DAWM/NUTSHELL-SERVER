@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Defer;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.User;
-import nutshell.server.dto.task.TaskAssignedDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TaskDetailEditDto;
-import nutshell.server.dto.task.TaskDto;
-import nutshell.server.dto.task.TaskStatusDto;
+import nutshell.server.dto.task.*;
 import nutshell.server.dto.type.Status;
+import nutshell.server.exception.NotFoundException;
+import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.service.defer.DeferSaver;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,5 +110,34 @@ public class TaskService {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         taskUpdater.editDetails(task, taskDetailEditDto);
+    }
+
+    public TodoTaskDto getTasksOfType(final Long userId, final String type){
+        User user = userRetriever.findByUserId(userId);
+        List<Task> tasks = new ArrayList<>();
+
+        if (type.equals("upcoming")){
+            tasks = taskRetriever.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+        } else if (type.equals("inprogress")) {
+            tasks = taskRetriever.findAllInprogressTasksByUserWithStatus(userId);
+        } else if (type.equals("deferred")) {
+            tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
+        } else {
+            throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
+        }
+        return TodoTaskDto.builder()
+                .tasks(
+                        tasks.stream().map( task -> TodoTaskDto.TaskComponentDto.builder()
+                                .id(task.getId())
+                                .name(task.getName())
+                                .deadLine(
+                                        new TaskCreateDto.DeadLine(
+                                                task.getDeadLine().toLocalDate(),
+                                                task.getDeadLine().getHour() + ":" +
+                                                        task.getDeadLine().getMinute()
+                                        )
+                                ).build()
+                        ).toList()
+                ).build();
     }
 }

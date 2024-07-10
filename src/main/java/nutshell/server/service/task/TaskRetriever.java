@@ -27,4 +27,17 @@ public class TaskRetriever {
         return taskRepository.findAllByStatusAndAssignedDateLessThan(Status.TODO, LocalDate.now());
     }
 
+    public List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId){
+        return taskRepository.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+    }
+
+    public List<Task> findAllInprogressTasksByUserWithStatus(final Long userId){
+        return taskRepository.findAllInprogressTasksByUserWithStatus(userId);
+    }
+
+    public List<Task> findAllDeferredTasksByUserWithStatus(final Long userId){
+        return taskRepository.findAllDeferredTasksByUserWithStatus(userId);
+    }
+
+
 }
