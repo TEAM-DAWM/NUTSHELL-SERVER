@@ -83,7 +83,7 @@ public class TaskService {
     @Transactional
     public void editStatus(final Long userId, final Long taskId, final TaskStatusDto taskStatusDto){
         User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findTaskByTaskId(taskId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
         Status status = Status.fromContent(taskStatusDto.status());
         taskUpdater.updateStatus(task, status);
     }
