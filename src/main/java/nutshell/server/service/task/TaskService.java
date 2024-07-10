@@ -51,7 +51,7 @@ public class TaskService {
     @Transactional
     public void removeTask(final Long userId, final Long taskId) {
         User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findTaskByTaskId(taskId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
         taskRemover.deleteTask(task);
     }
 
@@ -62,14 +62,14 @@ public class TaskService {
             throw new IllegalArgumentException("TaskAssignedDto is null");
         }
         User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findTaskByTaskId(taskId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
         LocalDate targetDate = taskAssignedDto.targetDate();
         taskUpdater.updateAssignedTask(task, targetDate);
     }
   
     public TaskDto getTaskDetails(final Long userId, final Long taskId){
         User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findTaskByTaskId(taskId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
         LocalDate date = task.getDeadLine() != null ? task.getDeadLine().toLocalDate() : null;
         String time = task.getDeadLine() != null ? task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute() : null;
 
@@ -107,7 +107,7 @@ public class TaskService {
     @Transactional
     public void editDetail(final Long userId, final Long taskId, TaskDetailEditDto taskDetailEditDto){
         User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findTaskByTaskId(taskId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
         taskUpdater.editDetails(task, taskDetailEditDto);
     }
 }
