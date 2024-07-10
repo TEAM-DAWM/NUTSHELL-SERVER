@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.task.TaskAssignedDto;
 import nutshell.server.dto.task.TaskCreateDto;
+import nutshell.server.dto.task.TaskDetailEditDto;
 import nutshell.server.dto.task.TaskDto;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.service.task.TaskService;
@@ -61,6 +62,15 @@ public class TaskController {
             @RequestBody final TaskStatusDto taskStatusDto
     ){
         taskService.editStatus(userId, taskId, taskStatusDto);
+      }
+  
+    @PatchMapping("/tasks/{taskId}")
+    public ResponseEntity<Void> editDetail(
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestBody(required = false) final TaskDetailEditDto taskDetailEditDto
+    ){
+        taskService.editDetail(userId, taskId, taskDetailEditDto);
         return ResponseEntity.noContent().build();
     }
 }

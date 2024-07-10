@@ -6,6 +6,7 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.User;
 import nutshell.server.dto.task.TaskAssignedDto;
 import nutshell.server.dto.task.TaskCreateDto;
+import nutshell.server.dto.task.TaskDetailEditDto;
 import nutshell.server.dto.task.TaskDto;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.dto.type.Status;
@@ -37,7 +38,7 @@ public class TaskService {
                         Integer.parseInt(taskCreateDto.deadLine().time().split(":")[0]),
                         Integer.parseInt(taskCreateDto.deadLine().time().split(":")[1])
                 )
-                : null; //null 체크 안하면 에러남!
+                : null;
 
         Task task = Task.builder()
                 .user(user)
@@ -101,5 +102,12 @@ public class TaskService {
         taskUpdater.updateStatus(task, Status.DEFERRED);
         Defer defer = Defer.builder().task(task).build();
         deferSaver.save(defer);
+    }
+
+    @Transactional
+    public void editDetail(final Long userId, final Long taskId, TaskDetailEditDto taskDetailEditDto){
+        User user = userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findTaskByTaskId(taskId);
+        taskUpdater.editDetails(task, taskDetailEditDto);
     }
 }
