@@ -1,18 +1,19 @@
 package nutshell.server.service.task;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nutshell.server.domain.Task;
+import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.task.TaskAssignedDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TaskDetailEditDto;
-import nutshell.server.dto.task.TaskDto;
+import nutshell.server.dto.task.*;
+import nutshell.server.service.timeblock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -22,6 +23,8 @@ public class TaskService {
     private final TaskRetriever taskRetriever;
     private final TaskRemover taskRemover;
     private final TaskUpdater taskUpdater;
+    private final TimeBlockRetriever timeBlockRetriever;
+
 
     @Transactional
     public Task createTask(final Long userId, final TaskCreateDto taskCreateDto){
@@ -60,17 +63,21 @@ public class TaskService {
         LocalDate targetDate = taskAssignedDto.targetDate();
         taskUpdater.updateAssignedTask(task, targetDate);
     }
-  
-    public TaskDto getTaskDetails(final Long userId, final Long taskId){
+
+    public TaskDto getTaskDetails(final Long userId, final Long taskId, final TargetDateDto targetDateDto){
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findTaskByTaskId(taskId);
+
         LocalDate date = task.getDeadLine() != null ? task.getDeadLine().toLocalDate() : null;
         String time = task.getDeadLine() != null ? task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute() : null;
 
+        TimeBlock tb = timeBlockRetriever.findByTaskIdAndTargetDate(task, targetDateDto.targetDate());
+        TaskDto.TimeBlock timeBlock = (tb == null) ? null : TaskDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
         return TaskDto.builder().name(task.getName())
                 .description(task.getDescription())
                 .deadLine(new TaskCreateDto.DeadLine(date, time))
                 .status(task.getStatus().getContent())
+                .timeBlock(timeBlock)
                 .build();
     }
 
