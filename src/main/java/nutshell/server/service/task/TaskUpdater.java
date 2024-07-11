@@ -38,4 +38,11 @@ public class TaskUpdater {
     ) {
         task.updateStatus(status);
     }
+
+    public void updateAssignedDate(
+            final Task task,
+            final LocalDate assignedDate
+    ) {
+        task.updateAssignedDate(assignedDate);
+    }
 }

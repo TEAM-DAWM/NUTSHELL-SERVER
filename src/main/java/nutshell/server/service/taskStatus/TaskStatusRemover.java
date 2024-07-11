@@ -9,14 +9,14 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TaskStatusSaver {
+public class TaskStatusRemover {
     private final TaskStatusRepository taskStatusRepository;
 
-    public TaskStatus save(TaskStatus taskStatus) {
-        return taskStatusRepository.save(taskStatus);
+    public void remove(final TaskStatus taskStatus){
+        taskStatusRepository.delete(taskStatus);
     }
 
-    public void saveAll(List<TaskStatus> taskStatuses) {
-        taskStatusRepository.saveAll(taskStatuses);
+    public void removeAll(final List<TaskStatus> taskStatuses){
+        taskStatusRepository.deleteAll(taskStatuses);
     }
 }
