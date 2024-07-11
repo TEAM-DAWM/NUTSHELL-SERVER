@@ -3,11 +3,7 @@ package nutshell.server.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.task.TargetDateDto;
-import nutshell.server.dto.task.TaskDto;
-import nutshell.server.dto.task.TaskStatusDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TasksDto;
+import nutshell.server.dto.task.*;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,4 +65,15 @@ public class TaskController {
     ){
         return ResponseEntity.ok(taskService.getTasks(userId, isTotal, order, targetDate));
     }
+
+    @PatchMapping("/tasks/{taskId}")
+    public ResponseEntity<Void> editDetail(
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestBody(required = false) final TaskDetailEditDto taskDetailEditDto
+    ){
+        taskService.editDetail(userId, taskId, taskDetailEditDto);
+        return ResponseEntity.noContent().build();
+    }
+
 }
