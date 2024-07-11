@@ -88,8 +88,6 @@ public class Task {
 
     public void updateStatus(Status status) {
         this.status = status;
-        if (status == Status.DEFERRED)
-            this.assignedDate = null;
         this.updatedAt = LocalDateTime.now();
     }
 }
