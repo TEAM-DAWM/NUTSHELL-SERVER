@@ -67,7 +67,7 @@ public class GoogleCalendarService {
     }
     @Transactional
     public GoogleCalendar getToken(final String code, final Long userId) {
-        User user = userRetriever.findById(userId);
+        User user = userRetriever.findByUserId(userId);
         RestClient restClient = RestClient.create();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add(GoogleCalendarConstant.CLIENT_ID, CLIENT_ID);
@@ -107,7 +107,7 @@ public class GoogleCalendarService {
 
     @Transactional
     public void unlink(final Long userId, final Long googleCalenderId){
-        User user = userRetriever.findById(userId);
+        User user = userRetriever.findByUserId(userId);
         GoogleCalendar googleCalendar = googleCalendarRetriever.findByIdAndUser(googleCalenderId, user);
         RestClient restClient = RestClient.create();
         restClient.post()
@@ -128,7 +128,7 @@ public class GoogleCalendarService {
             final Integer range,
             final CategoriesDto categoriesDto
     ) {
-        User user = userRetriever.findById(userId);
+        User user = userRetriever.findByUserId(userId);
         List<GoogleCalendar> googleCalendars = googleCalendarRetriever.findAllByUser(user);
         List<GoogleSchedulesDto> schedules = new ArrayList<>();
         googleCalendars.forEach(

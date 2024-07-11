@@ -48,7 +48,7 @@ public class TimeBlockRetriever {
             final LocalDateTime startTime,
             final LocalDateTime endTime
     ) {
-        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime);
+        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime, startTime, endTime);
     }
 
     public List<TimeBlockDto> findAllByTaskIdAndTimeRange(

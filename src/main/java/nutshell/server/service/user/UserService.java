@@ -14,7 +14,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto getUser(final Long userId){
-        User user = userRetriever.findById(userId);
+        User user = userRetriever.findByUserId(userId);
         return UserDto.builder()
                 .givenName(user.getGivenName())
                 .familyName(user.getFamilyName())

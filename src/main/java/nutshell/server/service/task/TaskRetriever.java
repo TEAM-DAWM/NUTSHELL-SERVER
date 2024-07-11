@@ -20,6 +20,12 @@ public class TaskRetriever {
         return taskRepository.findByUserAndId(user, taskId)
                 .orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK));
     }
+
+    public Task findById(final Long id){
+        return taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK)
+        );
+    }
     public List<Task> findAllByUserAndTimeBlocks(User user, LocalDateTime startTime, LocalDateTime endTime) {
         return taskRepository.findAllByUserAndTimeBlocks(user, startTime, endTime);
     }

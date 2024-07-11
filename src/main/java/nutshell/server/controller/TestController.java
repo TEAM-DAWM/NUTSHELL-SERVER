@@ -2,22 +2,28 @@ package nutshell.server.controller;
 
 import jakarta.validation.Valid;
 import nutshell.server.annotation.UserId;
+import nutshell.server.domain.Token;
 import nutshell.server.dto.auth.JwtTokensDto;
 import nutshell.server.dto.test.TestDto;
 import nutshell.server.dto.test.TestInput;
+import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.ForbiddenException;
+import nutshell.server.exception.code.BusinessErrorCode;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.exception.code.ForbiddenErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
+import nutshell.server.service.token.TokenSaver;
 import nutshell.server.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class TestController {
     private final JwtUtil jwtUtil;
+    private final TokenSaver tokenSaver;
+
     @GetMapping("/test/security")
     public ResponseEntity<TestDto> testSecurity(
             @UserId final Long userId,
@@ -36,6 +42,7 @@ public class TestController {
             @PathVariable final Long userId
     ) {
         JwtTokensDto tokens = jwtUtil.generateTokens(userId);
+        tokenSaver.save(Token.builder().id(userId).refreshToken(tokens.refreshToken()).build());
         return ResponseEntity.ok(tokens);
     }
 
