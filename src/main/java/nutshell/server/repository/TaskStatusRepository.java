@@ -2,6 +2,7 @@ package nutshell.server.repository;
 
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
+import nutshell.server.domain.User;
 import nutshell.server.dto.type.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +34,8 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
             "and ts.status is not 'DEFERRED' and ts.status is not 'DONE'"
     ,nativeQuery = true)
     List<TaskStatus> findAllByTargetDate(final LocalDate targetDate);
+
+    @Query(value = "select ts from TaskStatus ts where ts.task.user = :user and ts.targetDate = :targetDate " +
+            "and ts.status = :status order by ts.updatedAt desc, ts.task.assignedDate desc")
+    List<TaskStatus> findAllByTargetDateAndStatusDesc(final User user, final LocalDate targetDate, final Status status);
 }
