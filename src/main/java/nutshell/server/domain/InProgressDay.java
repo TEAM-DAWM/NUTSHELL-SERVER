@@ -2,6 +2,7 @@ package nutshell.server.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ public class InProgressDay {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
+    @Builder
     public InProgressDay(LocalDate inprogressDate, Task task) {
         this.inprogressDate = inprogressDate;
         this.task = task;
