@@ -1,9 +1,9 @@
-package nutshell.server.service.task;
+package nutshell.server.service.taskStatus;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService {
+public class TaskStatusService {
 }

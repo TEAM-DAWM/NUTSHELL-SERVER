@@ -25,10 +25,6 @@ public class Task {
     @Column(name = "description")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
-
     @Column(name = "priority")
     private String priority;
 
@@ -38,17 +34,15 @@ public class Task {
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
 
-    @Column(name = "completion_date")
-    private LocalDate completionDate;
-
     @Column(name = "reminder")
     private String reminder;
 
     @Column(name = "repetition")
     private String repetition;
 
-    @Column(name = "inprogress_date")
-    private LocalDate inprogressDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -60,23 +54,19 @@ public class Task {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TimeBlock> timeBlocks;
 
-    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<Defer> defers;
-
-    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<InProgressDay> inProgressDays;
-
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TaskStatus> taskStatuses;
 
     @Builder
     public Task(User user, String name, String description, LocalDateTime deadLine) {
         this.user = user;
         this.name = name;
         this.description = description;
-        this.status = Status.TODO;
         this.deadLine = deadLine;
+        this.status = Status.TODO;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -98,20 +88,8 @@ public class Task {
 
     public void updateStatus(Status status) {
         this.status = status;
-        if(status == Status.IN_PROGRESS) {
-            this.inprogressDate = LocalDate.now();
-            this.completionDate = null;
-        }
-        else if (status == Status.DONE) {
-            this.completionDate = LocalDate.now();
-            this.inprogressDate = null;
-        }
-        else if(status == Status.DEFERRED)
+        if (status == Status.DEFERRED)
             this.assignedDate = null;
-        else {
-            this.inprogressDate = null;
-            this.completionDate = null;
-        }
         this.updatedAt = LocalDateTime.now();
     }
 }
