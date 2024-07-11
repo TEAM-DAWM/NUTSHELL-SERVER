@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.User;
 import nutshell.server.dto.task.TaskCreateDto;
+import nutshell.server.repository.TaskRepository;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,8 @@ public class TaskService {
 
     private final UserRetriever userRetriever;
     private final TaskSaver taskSaver;
+    private final TaskRetriever taskRetriever;
+    private final TaskRemover taskRemover;
 
     @Transactional
     public Task createTask(final Long userId, final TaskCreateDto taskCreateDto){
@@ -40,5 +43,11 @@ public class TaskService {
                 .deadLine(deadLine)
                 .build();
         return taskSaver.save(task);
+    }
+
+    public void removeTask(final Long userId, final Long taskId){
+        User user= userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
+        taskRemover.deleteTask(task);
     }
 }
