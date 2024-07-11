@@ -39,7 +39,7 @@ public class Task {
     private LocalDate assignedDate;
 
     @Column(name = "completion_date")
-    private LocalDateTime completionDate;
+    private LocalDate completionDate;
 
     @Column(name = "reminder")
     private String reminder;
@@ -48,7 +48,7 @@ public class Task {
     private String repetition;
 
     @Column(name = "inprogress_date")
-    private LocalDateTime inprogressDate;
+    private LocalDate inprogressDate;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -65,6 +65,9 @@ public class Task {
 
     @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private List<Defer> defers;
+
+    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<InProgressDay> inProgressDays;
 
 
     @Builder
@@ -95,12 +98,20 @@ public class Task {
 
     public void updateStatus(Status status) {
         this.status = status;
-        if(status == Status.IN_PROGRESS)
-            this.inprogressDate = LocalDateTime.now();
-        else if (status == Status.DONE)
-            this.completionDate = LocalDateTime.now();
+        if(status == Status.IN_PROGRESS) {
+            this.inprogressDate = LocalDate.now();
+            this.completionDate = null;
+        }
+        else if (status == Status.DONE) {
+            this.completionDate = LocalDate.now();
+            this.inprogressDate = null;
+        }
         else if(status == Status.DEFERRED)
             this.assignedDate = null;
+        else {
+            this.inprogressDate = null;
+            this.completionDate = null;
+        }
         this.updatedAt = LocalDateTime.now();
     }
 }
