@@ -41,6 +41,7 @@ public class TaskService {
     private final TaskRemover taskRemover;
     private final TimeBlockRetriever timeBlockRetriever;
 
+
     @Transactional
     public void updateStatus(
             final Long userId,
@@ -155,7 +156,7 @@ public class TaskService {
         return TaskDto.builder()
                 .name(task.getName())
                 .description(task.getDescription())
-                .status(task.getStatus().getContent())
+                .status(taskStatusRetriever.findByTaskAndTargetDate(task, targetDateDto.targetDate()).getStatus().getContent())
                 .deadLine(new TaskCreateDto.DeadLine(date, time))
                 .timeBlock(timeBlock)
                 .build();
