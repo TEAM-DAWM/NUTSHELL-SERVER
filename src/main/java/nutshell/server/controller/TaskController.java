@@ -1,14 +1,17 @@
 package nutshell.server.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.dto.task.TaskCreateDto;
+import nutshell.server.dto.task.TasksDto;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +46,15 @@ public class TaskController {
     ){
         taskService.removeTask(userId, taskId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<TasksDto> getTasks(
+            @UserId final Long userId,
+            @RequestParam(required = false) final Boolean isTotal,
+            @RequestParam(required = false) final String order,
+            @RequestParam(required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate targetDate
+    ){
+        return ResponseEntity.ok(taskService.getTasks(userId, isTotal, order, targetDate));
     }
 }

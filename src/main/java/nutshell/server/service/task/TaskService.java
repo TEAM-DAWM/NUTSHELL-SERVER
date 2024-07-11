@@ -6,6 +6,7 @@ import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.User;
 import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.dto.task.TaskStatusDto;
+import nutshell.server.dto.task.TasksDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
@@ -131,5 +132,57 @@ public class TaskService {
         User user= userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         taskRemover.deleteTask(task);
+    }
+
+    public TasksDto getTasks(
+            final Long userId,
+            final Boolean isTotal,
+            final String order,
+            final LocalDate targetDate
+    ){
+        User user = userRetriever.findByUserId(userId);
+        List< TasksDto.TaskItemDto> taskItems;
+        if (targetDate != null){
+            List<TaskStatus> taskStatuses = new ArrayList<>();
+            taskStatuses.addAll(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, targetDate, Status.IN_PROGRESS));
+            taskStatuses.addAll(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, targetDate, Status.TODO));
+            taskStatuses.addAll(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, targetDate, Status.DONE));
+            taskItems = taskStatuses
+                    .stream().map(
+                            taskStatus -> TasksDto.TaskItemDto.builder()
+                                    .id(taskStatus.getTask().getId())
+                                    .name(taskStatus.getTask().getName())
+                                    .hasDescription(taskStatus.getTask().getDescription() != null)
+                                    .status(taskStatus.getStatus().getContent())
+                                    .deadLine(new TaskCreateDto.DeadLine(
+                                            taskStatus.getTask().getDeadLine().toLocalDate(),
+                                            taskStatus.getTask().getDeadLine().getHour() + ":" + taskStatus.getTask().getDeadLine().getMinute()
+                                    )).build()
+                    ).toList();
+        } else {
+            List<Task> tasks = order == null ? taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user)
+                    :
+                    switch (order) {
+                        case "recent" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user);
+                        case "old" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtAsc(user);
+                        case "near" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByTimeDiffAsc(user);
+                        case "far" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(user);
+                        default -> throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
+
+                    };
+            tasks = isTotal ? tasks : tasks.stream().filter(task -> task.getStatus().equals(Status.DEFERRED)).toList();
+            taskItems = tasks.stream().map(
+                    task -> TasksDto.TaskItemDto.builder()
+                            .id(task.getId())
+                            .name(task.getName())
+                            .hasDescription(task.getDescription() != null)
+                            .status(task.getStatus().getContent())
+                            .deadLine(new TaskCreateDto.DeadLine(
+                                    task.getDeadLine().toLocalDate(),
+                                    task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute()
+                            )).build()
+            ).toList();
+        }
+        return TasksDto.builder().tasks(taskItems).build();
     }
 }
