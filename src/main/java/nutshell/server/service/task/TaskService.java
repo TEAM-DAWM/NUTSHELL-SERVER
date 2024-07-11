@@ -3,8 +3,11 @@ package nutshell.server.service.task;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
+import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
+import nutshell.server.dto.task.TargetDateDto;
 import nutshell.server.dto.task.TaskCreateDto;
+import nutshell.server.dto.task.TaskDto;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
@@ -12,10 +15,12 @@ import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
 import nutshell.server.service.taskStatus.*;
+import nutshell.server.service.timeblock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,6 +39,7 @@ public class TaskService {
     private final TaskStatusUpdater taskStatusUpdater;
     private final TaskSaver taskSaver;
     private final TaskRemover taskRemover;
+    private final TimeBlockRetriever timeBlockRetriever;
 
     @Transactional
     public void updateStatus(
@@ -131,5 +137,27 @@ public class TaskService {
         User user= userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         taskRemover.deleteTask(task);
+    }
+
+    public TaskDto getTaskDetails(final Long userId, final Long taskId, final TargetDateDto targetDateDto){
+        User user = userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
+
+        LocalDate date = task.getDeadLine() != null
+                ? task.getDeadLine().toLocalDate() : null;
+        String time = task.getDeadLine() != null
+                ? task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute() : null;
+
+        TimeBlock tb = timeBlockRetriever.findByTaskIdAndTargetDate(task, targetDateDto.targetDate()); //timeblock 찾아옴
+        TaskDto.TimeBlock timeBlock = (tb == null) ? null
+                : TaskDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
+
+        return TaskDto.builder()
+                .name(task.getName())
+                .description(task.getDescription())
+                .status(task.getStatus().getContent())
+                .deadLine(new TaskCreateDto.DeadLine(date, time))
+                .timeBlock(timeBlock)
+                .build();
     }
 }

@@ -2,6 +2,8 @@ package nutshell.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
+import nutshell.server.dto.task.TargetDateDto;
+import nutshell.server.dto.task.TaskDto;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.service.task.TaskService;
@@ -43,5 +45,15 @@ public class TaskController {
     ){
         taskService.removeTask(userId, taskId);
         return ResponseEntity.noContent().build();
+    }
+
+    // Task 상세조회 GET API
+    @GetMapping("/tasks/{taskId}")
+    public ResponseEntity<TaskDto> getTask(
+        @UserId final Long userId,
+        @PathVariable final Long taskId,
+        @RequestBody final TargetDateDto targetDateDto
+    ){
+        return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
     }
 }
