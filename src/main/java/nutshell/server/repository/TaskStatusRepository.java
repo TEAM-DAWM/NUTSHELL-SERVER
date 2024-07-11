@@ -12,10 +12,15 @@ import java.util.Optional;
 public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
     List<TaskStatus> findAllByTaskAndTargetDateGreaterThanAndStatusNot(
             final Task task,
-            final LocalDate createdAt,
+            final LocalDate targetDate,
             final Status status
     );
-    Optional<TaskStatus> findByTaskAndTargetDateAndStatusNot(final Task task, final LocalDate createdAt, final Status status);
+    Boolean existsByTaskAndTargetDateAndStatusNot(
+            final Task task,
+            final LocalDate targetDate,
+            final Status status
+    );
+    Optional<TaskStatus> findByTaskAndTargetDateAndStatusNot(final Task task, final LocalDate targetDate, final Status status);
 
     List<TaskStatus> findAllByTargetDate(final LocalDate TargetDate);
 

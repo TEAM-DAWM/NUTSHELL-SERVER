@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum BusinessErrorCode implements DefaultErrorCode{
     BUSINESS_TEST(HttpStatus.OK,"conflict","선착순 마감됐어요"),
     BUSINESS_TODAY(HttpStatus.OK, "conflict", "오늘 이후로 선택할 수 있습니다."),
+    BUSINESS_DUP_DAY(HttpStatus.OK, "conflict", "해당 날짜에 이미 할당되었습니다."),
     ;
     @JsonIgnore
     private final HttpStatus httpStatus;

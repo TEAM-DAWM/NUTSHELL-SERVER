@@ -46,6 +46,8 @@ public class TaskService {
             } else if (status != Status.DONE){
                 throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
             }
+            if (taskStatusRetriever.existsByTaskAndTargetDate(task, taskStatusDto.targetDate()))
+                throw new BusinessException(BusinessErrorCode.BUSINESS_DUP_DAY);
             taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());
             taskStatusSaver.save(
                     TaskStatus.builder()
