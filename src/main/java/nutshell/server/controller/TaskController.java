@@ -76,4 +76,11 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/tasks/today")
+    public ResponseEntity<TodoTaskDto> showTaskType(
+            @UserId final Long userId,
+            @RequestParam String type
+    ){
+        return ResponseEntity.ok(taskService.getTasksOfType(userId, type));
+    }
 }

@@ -43,4 +43,12 @@ public class TaskRetriever {
     public List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(final User user){
         return taskRepository.findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(user.getId());
     }
+
+    public List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId){
+        return taskRepository.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+    }
+
+    public List<Task> findAllDeferredTasksByUserWithStatus(final Long userId){
+        return taskRepository.findAllDeferredTasksByUserWithStatus(userId);
+    }
 }
