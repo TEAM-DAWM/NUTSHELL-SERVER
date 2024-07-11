@@ -47,6 +47,13 @@ public class TaskService {
                 throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
             }
             taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());
+            taskStatusSaver.save(
+                    TaskStatus.builder()
+                            .task(task)
+                            .status(status)
+                            .targetDate(taskStatusDto.targetDate())
+                            .build()
+            );
         } else {    //target date area에서 수정될 때
             if ((status == Status.DONE || status == Status.IN_PROGRESS)
                     && taskStatusDto.targetDate().isBefore(LocalDate.now())
@@ -85,7 +92,7 @@ public class TaskService {
                     task, taskStatusDto.targetDate()
             );
             taskStatusUpdater.updateStatus(taskStatus, status);
-            taskUpdater.updateStatus(task, status);
         }
+        taskUpdater.updateStatus(task, status);
     }
 }
