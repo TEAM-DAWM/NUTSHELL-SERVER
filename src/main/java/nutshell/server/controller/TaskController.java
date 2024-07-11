@@ -26,8 +26,6 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    private final TaskService taskService;
-
     // Staging Area 에 새로운 Task 생성하는 POST API
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
