@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum IllegalArgumentErrorCode implements DefaultErrorCode {
     INVALID_ARGUMENTS(HttpStatus.BAD_REQUEST, "error", "인자의 형식이 올바르지 않습니다."),
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "error", "날짜 형식이 올바르지 않습니다."),
     ;
 
     @JsonIgnore

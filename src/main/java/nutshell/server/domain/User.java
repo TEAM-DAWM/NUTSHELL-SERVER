@@ -43,16 +43,17 @@ public class User {
     private List<Task> tasks;
 
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<GoogleCalender> googleCalenders;
+    private List<GoogleCalendar> googleCalendars;
 
     @Builder
+
     public User(String givenName, String familyName, String image, String email, String serialId) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.image = image;
         this.email = email;
         this.serialId = serialId;
-        this.createdAt=LocalDateTime.now();
-        this.updatedAt=LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

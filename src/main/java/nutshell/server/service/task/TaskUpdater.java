@@ -1,9 +1,9 @@
 package nutshell.server.service.task;
 
 import nutshell.server.domain.Task;
+import org.springframework.stereotype.Component;
 import nutshell.server.dto.type.Status;
 import nutshell.server.dto.task.TaskDetailEditDto;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

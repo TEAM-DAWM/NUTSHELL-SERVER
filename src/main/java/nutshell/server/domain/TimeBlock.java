@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,9 +16,6 @@ public class TimeBlock {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name="date", nullable = false)
-    private LocalDate date;
 
     @Column(name="start_time", nullable = false)
     private LocalDateTime startTime;
@@ -36,8 +34,7 @@ public class TimeBlock {
     private Task task;
 
     @Builder
-    public TimeBlock(LocalDate date, LocalDateTime startTime, LocalDateTime endTime, Task task) {
-        this.date = date;
+    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, Task task) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.task = task;
@@ -45,7 +42,6 @@ public class TimeBlock {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @Builder
     public void updateTimeBlock(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;

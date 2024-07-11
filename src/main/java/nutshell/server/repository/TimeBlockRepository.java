@@ -2,6 +2,8 @@ package nutshell.server.repository;
 
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TimeBlock;
+import nutshell.server.domain.User;
+import nutshell.server.dto.timeBlock.response.TimeBlockDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,6 +12,51 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
+    @Query(value="select count(t) > 0 from TimeBlock t " +
+            "where t.task.user = :user and " +
+            "t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime"
+            )
+    Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(
+            final User user,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    );
+
+    @Query(value="select count(t) > 0 from TimeBlock t " +
+            "where t.task.user = :user and " +
+            "t.id != :id and " +
+            "(t.startTime between :startTime and :endTime or " +
+            "t.endTime between :startTime and :endTime)"
+    )
+    Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final User user,
+            final Long id,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    );
+
+    Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
+            final Task task,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime,
+            final LocalDateTime startTime2,
+            final LocalDateTime endTime2
+    );
+
+
+    @Query("SELECT new nutshell.server.dto.timeBlock.response.TimeBlockDto(t.id, t.startTime, t.endTime) " +
+            "FROM TimeBlock t " +
+            "WHERE t.task = :task " +
+            "AND t.startTime between :startTime and :endTime " +
+            "AND t.endTime between :startTime and :endTime")
+    List<TimeBlockDto> findAllByTaskIdAndTimeRange(
+            final Task task,
+            final LocalDateTime startTime,
+            final LocalDateTime endTime
+    );
+
+    Optional<TimeBlock> findByTaskAndId(final Task task, final Long id);
 
     @Query( value = "SELECT t from TimeBlock t WHERE t.task = :task " +
             "AND t.startTime >= :startOfDay AND t.startTime <= :endOfDay " +

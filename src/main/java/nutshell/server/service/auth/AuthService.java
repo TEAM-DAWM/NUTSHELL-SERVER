@@ -18,7 +18,6 @@ import nutshell.server.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.IOException;
 
 
 @Slf4j
@@ -60,8 +59,7 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokensDto googleLogin(final String code)
-            throws IOException{
+    public JwtTokensDto googleLogin(final String code) {
         log.info("{}", code);
         GoogleTokenResponse googleTokenResponse = googleAuthClient.googleAuth( // 구글 인증 API 호출
                code, // 클라이언트에서 받은 인증 코드

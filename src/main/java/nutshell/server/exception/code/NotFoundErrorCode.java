@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum NotFoundErrorCode implements DefaultErrorCode{
     NOT_FOUND_END_POINT(HttpStatus.NOT_FOUND, "error", "존재하지 않는 API입니다."),
+    NOT_FOUND_GOOGLE_CALENDER(HttpStatus.NOT_FOUND, "error", "존재하지 않는 구글 연동 입니다."),
+    NOT_FOUND_TIME_BLOCK(HttpStatus.NOT_FOUND, "error", "존재하지 않는 TimeBlock 입니다."),
     NOT_FOUND_TASK(HttpStatus.NOT_FOUND, "error", "존재하지 않는 Task 입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND,"error","존재하지 않는 사용자 입니다."),
     NOT_FOUND_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "error","리프레시 토큰을 찾을 수 없습니다."),

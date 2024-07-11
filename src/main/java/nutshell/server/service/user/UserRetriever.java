@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 public class UserRetriever {
     private final UserRepository userRepository;
 
-    public User findByUserId(final Long userId){
-        return userRepository.findById(userId).orElseThrow(
-                ()-> new NotFoundException(NotFoundErrorCode.NOT_FOUND_USER)
-          );
+    public User findByUserId(final Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_USER));
     }
 
     public User findBySerialIdAndEmailOrGet(final String serialId, final String givenName, final String familyName, final String picture, final String email){
