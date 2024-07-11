@@ -3,6 +3,8 @@ package nutshell.server.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
+import nutshell.server.dto.task.TargetDateDto;
+import nutshell.server.dto.task.TaskDto;
 import nutshell.server.dto.task.TaskStatusDto;
 import nutshell.server.dto.task.TaskCreateDto;
 import nutshell.server.dto.task.TasksDto;
@@ -48,6 +50,16 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    // Task 상세조회 GET API
+    @GetMapping("/tasks/{taskId}")
+    public ResponseEntity<TaskDto> getTask(
+        @UserId final Long userId,
+        @PathVariable final Long taskId,
+        @RequestBody final TargetDateDto targetDateDto
+    ){
+        return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
+     }
+  
     @GetMapping("/tasks")
     public ResponseEntity<TasksDto> getTasks(
             @UserId final Long userId,
