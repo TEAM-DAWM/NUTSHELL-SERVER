@@ -16,12 +16,11 @@ import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
 import nutshell.server.service.taskStatus.*;
-import nutshell.server.service.timeblock.TimeBlockRetriever;
+import nutshell.server.service.timeBlock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

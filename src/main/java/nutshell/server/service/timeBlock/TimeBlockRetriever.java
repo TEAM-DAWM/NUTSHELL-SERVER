@@ -10,6 +10,7 @@ import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.repository.TimeBlockRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimeBlockRetriever {
     private final TimeBlockRepository timeBlockRepository;
+
+    public TimeBlock findByTaskIdAndTargetDate(final Task task, final LocalDate targetDate){
+        LocalDateTime startOfDay = targetDate.atStartOfDay();
+        LocalDateTime endOfDay = targetDate.atTime(23, 59, 59);
+        return timeBlockRepository.findByTaskIdAndTargetDate(task, startOfDay, endOfDay).orElse(null);
+    }
 
     public TimeBlock findByTaskAndId(
             final Task task,

@@ -18,8 +18,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "and tb.endTime between :startTime and :endTime)")
     List<Task> findAllByUserAndTimeBlocks(final User user, LocalDateTime startTime, LocalDateTime endTime);
 
-    Optional<Task> findByUserAndId(User user, Long id);
-
     List<Task> findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(final User user);
 
     List<Task> findAllByUserAndAssignedDateIsNullOrderByCreatedAtAsc(final User user);
