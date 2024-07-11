@@ -5,10 +5,7 @@ import nutshell.server.annotation.UserId;
 import nutshell.server.dto.auth.JwtTokensDto;
 import nutshell.server.service.auth.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +17,7 @@ public class AuthController {
     @GetMapping("/login/google")
     public ResponseEntity<Void> googleLogin(
             @RequestParam final String code
-    ) throws IOException {
+    ) {
         authService.googleLogin(code);
         return ResponseEntity.ok().build();
     }

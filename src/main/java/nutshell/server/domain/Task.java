@@ -71,7 +71,6 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
-    @Builder
     public void updateTask(String name, String description, LocalDateTime deadLine) {
         if (name != null)
             this.name = name;

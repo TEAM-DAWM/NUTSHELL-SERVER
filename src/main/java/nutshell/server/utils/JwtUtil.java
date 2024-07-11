@@ -15,7 +15,6 @@ import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.UnAuthorizedErrorCode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
