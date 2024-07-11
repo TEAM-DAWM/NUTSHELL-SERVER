@@ -3,6 +3,7 @@ package nutshell.server.service.taskStatus;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
+import nutshell.server.domain.User;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.NotFoundErrorCode;
@@ -52,5 +53,13 @@ public class TaskStatusRetriever {
             final LocalDate targetDate
     ) {
         return taskStatusRepository.findAllByTargetDate(targetDate);
+    }
+
+    public List<TaskStatus> findAllByTargetDateAndStatusDesc(
+            final User user,
+            final LocalDate targetDate,
+            final Status status
+    ) {
+        return taskStatusRepository.findAllByTargetDateAndStatusDesc(user, targetDate, status);
     }
 }

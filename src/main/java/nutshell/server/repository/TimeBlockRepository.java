@@ -36,10 +36,6 @@ public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
             final LocalDateTime endTime
     );
 
-//    @Query(value="select count(t) > 0 from TimeBlock t " +
-//            "where t.task = :task and " +
-//            "t.startTime between :startTime and :endTime or " +
-//            "t.endTime between :startTime and :endTime")
     Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
             final Task task,
             final LocalDateTime startTime,
@@ -61,4 +57,10 @@ public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
     );
 
     Optional<TimeBlock> findByTaskAndId(final Task task, final Long id);
+
+    @Query( value = "SELECT t from TimeBlock t WHERE t.task = :task " +
+            "AND t.startTime >= :startOfDay AND t.startTime <= :endOfDay " +
+            "AND t.endTime >= :startOfDay AND t.endTime <= :endOfDay"
+    )
+    Optional<TimeBlock> findByTaskIdAndTargetDate(final Task task, final LocalDateTime startOfDay, final LocalDateTime endOfDay);
 }
