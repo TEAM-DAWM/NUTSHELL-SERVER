@@ -47,4 +47,10 @@ public class TaskStatusRetriever {
     ) {
         return taskStatusRepository.existsByTaskAndTargetDateAndStatusNot(task, targetDate, Status.DEFERRED);
     }
+
+    public List<TaskStatus> findAllByTargetDate(
+            final LocalDate targetDate
+    ) {
+        return taskStatusRepository.findAllByTargetDate(targetDate);
+    }
 }

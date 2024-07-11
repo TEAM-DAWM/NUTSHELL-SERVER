@@ -13,6 +13,11 @@ import org.springframework.stereotype.Component;
 public class TaskRetriever {
     public final TaskRepository taskRepository;
 
+    public Task findById(final Long id){
+        return taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK)
+        );
+    }
     public Task findByUserAndId(final User user, final Long id){
         return taskRepository.findByUserAndId(user, id).orElseThrow(
                 () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK)
