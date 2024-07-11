@@ -1,6 +1,6 @@
 package nutshell.server.service.task;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
 import nutshell.server.dto.type.Status;
 import nutshell.server.repository.TaskRepository;
