@@ -5,11 +5,7 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.task.TargetDateDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TaskDto;
-import nutshell.server.dto.task.TaskStatusDto;
-import nutshell.server.dto.task.TasksDto;
+import nutshell.server.dto.task.*;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
@@ -212,5 +208,12 @@ public class TaskService {
             ).toList();
         }
         return TasksDto.builder().tasks(taskItems).build();
+    }
+
+    @Transactional
+    public void editDetail(final Long userId, final Long taskId, TaskDetailEditDto taskDetailEditDto){
+        User user = userRetriever.findByUserId(userId);
+        Task task = taskRetriever.findByUserAndId(user, taskId);
+        taskUpdater.editDetails(task, taskDetailEditDto);
     }
 }
