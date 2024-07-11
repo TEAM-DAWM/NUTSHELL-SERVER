@@ -62,7 +62,6 @@ public class TaskController {
             @PathVariable final Long taskId,
             @RequestBody final TaskStatusDto taskStatusDto
     ){
-        taskService.editStatus(userId, taskId, taskStatusDto);
         return ResponseEntity.noContent().build();
     }
 

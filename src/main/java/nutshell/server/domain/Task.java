@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nutshell.server.dto.type.Status;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,10 +24,6 @@ public class Task {
     @Column(name = "description")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
-
     @Column(name = "priority")
     private String priority;
 
@@ -38,17 +33,11 @@ public class Task {
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
 
-    @Column(name = "completion_date")
-    private LocalDateTime completionDate;
-
     @Column(name = "reminder")
     private String reminder;
 
     @Column(name = "repetition")
     private String repetition;
-
-    @Column(name = "inprogress_date")
-    private LocalDateTime inprogressDate;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -64,7 +53,7 @@ public class Task {
     private List<TimeBlock> timeBlocks;
 
     @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<Defer> defers;
+    private List<TaskStatus> taskStatuses;
 
 
     @Builder
@@ -72,7 +61,6 @@ public class Task {
         this.user = user;
         this.name = name;
         this.description = description;
-        this.status = Status.TODO;
         this.deadLine = deadLine;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -90,17 +78,6 @@ public class Task {
 
     public void updateAssignedDate(LocalDate assignedDate) {
         this.assignedDate = assignedDate;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateStatus(Status status) {
-        this.status = status;
-        if(status == Status.IN_PROGRESS)
-            this.inprogressDate = LocalDateTime.now();
-        else if (status == Status.DONE)
-            this.completionDate = LocalDateTime.now();
-        else if(status == Status.DEFERRED)
-            this.assignedDate = null;
         this.updatedAt = LocalDateTime.now();
     }
 }

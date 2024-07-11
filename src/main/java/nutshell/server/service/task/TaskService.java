@@ -1,14 +1,13 @@
 package nutshell.server.service.task;
 
 import lombok.RequiredArgsConstructor;
-import nutshell.server.domain.Defer;
+import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.User;
 import nutshell.server.dto.task.*;
-import nutshell.server.dto.type.Status;
 import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.NotFoundErrorCode;
-import nutshell.server.service.defer.DeferSaver;
+import nutshell.server.service.taskStatus.TaskStatusSaver;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class TaskService {
     private final TaskRetriever taskRetriever;
     private final TaskRemover taskRemover;
     private final TaskUpdater taskUpdater;
-    private final DeferSaver deferSaver;
+    private final TaskStatusSaver taskStatusSaver;
 
     @Transactional
     public Task createTask(final Long userId, final TaskCreateDto taskCreateDto){
@@ -77,32 +75,12 @@ public class TaskService {
         return TaskDto.builder().name(task.getName())
                 .description(task.getDescription())
                 .deadLine(new TaskCreateDto.DeadLine(date, time))
-                .status(task.getStatus().getContent())
                 .build();
-    }
-
-    @Transactional
-    public void editStatus(final Long userId, final Long taskId, final TaskStatusDto taskStatusDto){
-        User user = userRetriever.findByUserId(userId);
-        Task task = taskRetriever.findByUserAndId(user, taskId);
-        Status status = Status.fromContent(taskStatusDto.status());
-        taskUpdater.updateStatus(task, status);
     }
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void statusSchedule(){
-        taskRetriever.findAllByStatusAndAssignedDateLessThan()
-                .forEach(
-                        this::makeDefer
-                );
-    }
-
-    @Transactional
-    public void makeDefer(final Task task){
-        taskUpdater.updateStatus(task, Status.DEFERRED);
-        Defer defer = Defer.builder().task(task).build();
-        deferSaver.save(defer);
     }
 
     @Transactional
@@ -119,9 +97,9 @@ public class TaskService {
         if (type.equals("upcoming")){
             tasks = taskRetriever.findAllUpcomingTasksByUserWitAssignedStatus(userId);
         } else if (type.equals("inprogress")) {
-            tasks = taskRetriever.findAllInprogressTasksByUserWithStatus(userId);
+//            tasks = taskRetriever.findAllInprogressTasksByUserWithStatus(userId);
         } else if (type.equals("deferred")) {
-            tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
+//            tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
         } else {
             throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
         }

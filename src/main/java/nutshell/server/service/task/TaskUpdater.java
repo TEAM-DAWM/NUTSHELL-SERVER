@@ -23,14 +23,6 @@ public class TaskUpdater {
         task.updateAssignedDate(targetDate);
     }
 
-    public void updateStatus(
-            final Task task,
-            final Status status
-    ){
-        task.updateStatus(status);
-
-    }
-
     public void editDetails(
             final Task task,
             final TaskDetailEditDto taskDetailEditDto
