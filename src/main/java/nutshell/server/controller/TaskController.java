@@ -3,10 +3,7 @@ package nutshell.server.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.task.TaskAssignedDto;
-import nutshell.server.dto.task.TaskCreateDto;
-import nutshell.server.dto.task.TaskDto;
-import nutshell.server.dto.task.TasksDto;
+import nutshell.server.dto.task.*;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +48,7 @@ public class TaskController {
     @GetMapping("/tasks/{taskId}")
     public ResponseEntity<TaskDto> getTask(
             @UserId final Long userId,
-            @PathVariable Long taskId
+            @PathVariable final Long taskId
     ){
         return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId));
     }
@@ -65,4 +62,33 @@ public class TaskController {
     ){
         return ResponseEntity.ok(taskService.getTasks(userId, isTotal, order, targetDate));
     }
+    @PatchMapping("tasks/{taskId}/status")
+    public ResponseEntity<Void> editStatus(
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestBody final TaskStatusDto taskStatusDto
+    ){
+        taskService.editStatus(userId, taskId, taskStatusDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/tasks/{taskId}")
+    public ResponseEntity<Void> editDetail(
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestBody(required = false) final TaskDetailEditDto taskDetailEditDto
+    ){
+        taskService.editDetail(userId, taskId, taskDetailEditDto);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/tasks/today")
+    public ResponseEntity<TodoTaskDto> showTaskType(
+            @UserId final Long userId,
+            @RequestParam String type
+    ){
+        return ResponseEntity.ok(taskService.getTasksOfType(userId, type));
+    }
+
 }

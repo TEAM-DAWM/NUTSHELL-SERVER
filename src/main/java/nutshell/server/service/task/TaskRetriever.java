@@ -17,8 +17,8 @@ import java.util.List;
 public class TaskRetriever {
     public final TaskRepository taskRepository;
 
-    public Task findTaskByTaskId(final Long taskId){
-        return taskRepository.findById(taskId).orElseThrow(
+    public Task findByUserAndId(final User user, final Long id){
+        return taskRepository.findByUserAndId(user, id).orElseThrow(
                 () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK)
         );
     }
@@ -42,5 +42,21 @@ public class TaskRetriever {
     public List<Task> findAllByUserAndStatusOrderByUpdatedStatusAtDescAssignedDateDesc(final User user, final Status status, final LocalDate targetDate){
         LocalDate tomorrow = targetDate.plusDays(1);
         return taskRepository.findAllByUserAndStatusOrderByUpdatedStatusAtDescAssignedDateDesc(user.getId(), status.toString(), targetDate, tomorrow);
+    }
+
+    public List<Task> findAllByStatusAndAssignedDateLessThan(){
+        return taskRepository.findAllByStatusAndAssignedDateLessThan(Status.TODO, LocalDate.now());
+    }
+
+    public List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId){
+        return taskRepository.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+    }
+
+    public List<Task> findAllInprogressTasksByUserWithStatus(final Long userId){
+        return taskRepository.findAllInprogressTasksByUserWithStatus(userId);
+    }
+
+    public List<Task> findAllDeferredTasksByUserWithStatus(final Long userId){
+        return taskRepository.findAllDeferredTasksByUserWithStatus(userId);
     }
 }
