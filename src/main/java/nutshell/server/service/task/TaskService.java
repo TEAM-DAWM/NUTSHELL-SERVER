@@ -104,8 +104,6 @@ public class TaskService {
             );
             if (status.equals(Status.DEFERRED)) {
                 TimeBlock timeBlock = timeBlockRetriever.findByTaskStatus(taskStatus);
-                //영속성을 끊어주기 위해서 taskStatus의 timeBlock을 null로 변경
-                taskStatus.updateTimeBlock();
                 timeBlockRemover.remove(timeBlock);
             }
             taskStatusUpdater.updateStatus(taskStatus, status);
