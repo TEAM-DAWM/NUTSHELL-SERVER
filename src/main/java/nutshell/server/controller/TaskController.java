@@ -81,9 +81,8 @@ public class TaskController {
             @UserId final Long userId,
             @RequestParam(required = false) final LocalDate startDate,
             @RequestParam(required = false) final LocalDate endDate,
-            @RequestParam(required = false) final Boolean isMonth,
-            @RequestParam(required = false) final Boolean isWeek
+            @RequestParam(required = false) final Boolean isMonth
     ){
-        return ResponseEntity.ok(taskService.getDashboard(userId, startDate, endDate, isMonth, isWeek));
+        return ResponseEntity.ok(taskService.getDashboard(userId, startDate, endDate, isMonth));
     }
 }

@@ -230,62 +230,33 @@ public class TaskService {
             final Long userId,
             final LocalDate startDate,
             final LocalDate endDate,
-            final Boolean isMonth,
-            final Boolean isWeek
+            final Boolean isMonth
     ) {
         User user = userRetriever.findByUserId(userId);
+        if (isMonth != null) { // 지난 1달
+            LocalDate now = LocalDate.now();
+            LocalDate past = isMonth ? now.minusDays(29) : now.minusDays(6);
+            return calcDashBoard(user, past, now);
 
-        int completeTasks = 0; // 완료된 일들
-        int avgInprogressTasks = 0; // 진행 중인 일들
-        int avgDeferredTasks = 0; // 지연된 일들
-        int assignedTasks = 0; // 할당된 일들
-
-        double avgDeferredRate = 0; // 지연카운트 % 기간 내 할당 된 일 개수
-        double avgInprogressDate = 0; // 기간 내 평균 진행 중인 일
-
-        if (startDate != null && endDate != null) {
-            completeTasks = taskStatusRetriever.countAllTasksInPeriod(user, startDate, endDate, Status.DONE); //완료된 할 일 갯수
-            avgInprogressTasks = taskStatusRetriever.countAllTasksInPeriod(user, startDate, endDate, Status.IN_PROGRESS);
-            avgDeferredTasks = taskStatusRetriever.countAllTasksInPeriod(user, startDate, endDate, Status.DEFERRED);
-            assignedTasks = taskRetriever.countAllAssignedTasksInPeriod(userId, startDate, endDate);
-
-            avgInprogressDate = Math.round(((double) avgInprogressTasks / ChronoUnit.DAYS.between(startDate, endDate)) * 10) / 10.0;
-            if (assignedTasks != 0) { // 할당된 작업이 있는 경우에만 계산
-                avgDeferredRate = Math.round(((double) avgDeferredTasks / assignedTasks) * 1000) / 10.0;
-            }
-
-        } else if (isMonth) { // 지난 1달
-            LocalDate now = LocalDate.now().plusDays(1);
-            LocalDate past = now.minusDays(30);
-
-            completeTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.DONE);
-            avgInprogressTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.IN_PROGRESS);
-            avgDeferredTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.DEFERRED);
-            assignedTasks = taskRetriever.countAllAssignedTasksInPeriod(userId, past, now);
-
-            avgInprogressDate = Math.round(((double) avgInprogressTasks / ChronoUnit.DAYS.between(past, now)) * 10);
-            if (assignedTasks != 0) { // 할당된 작업이 있는 경우에만 계산
-                avgDeferredRate = Math.round(((double) avgDeferredTasks / assignedTasks) * 1000) / 10.0;
-            }
-
-        } else if (isWeek) { // 지난 1주일
-            LocalDate nowDay = LocalDate.now().plusDays(1);
-            LocalDate pastDay = nowDay.minusDays(7);
-
-            completeTasks = taskStatusRetriever.countAllTasksInPeriod(user, pastDay, nowDay, Status.DONE);
-            avgInprogressTasks = taskStatusRetriever.countAllTasksInPeriod(user, pastDay, nowDay, Status.IN_PROGRESS);
-            avgDeferredTasks = taskStatusRetriever.countAllTasksInPeriod(user, pastDay, nowDay, Status.DEFERRED);
-            assignedTasks = taskRetriever.countAllAssignedTasksInPeriod(userId, pastDay, nowDay);
-
-            avgInprogressDate = Math.round(((double) avgInprogressTasks / ChronoUnit.DAYS.between(pastDay, nowDay)) * 10) / 10.0;
-            if (assignedTasks != 0) { // 할당된 작업이 있는 경우에만 계산
-                avgDeferredRate = Math.round(((double) avgDeferredTasks / assignedTasks) * 1000) / 10.0;
-            }
+        } else if (startDate != null && endDate != null) {
+            return calcDashBoard(user, startDate, endDate);
 
         } else {
             throw new BusinessException(BusinessErrorCode.BUSINESS_PERIOD);
         }
+    }
 
+    private TaskDashboardDto calcDashBoard(final User user, final LocalDate past, final LocalDate now){
+        int completeTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.DONE);
+        int avgInprogressTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.IN_PROGRESS);
+        int avgDeferredTasks = taskStatusRetriever.countAllTasksInPeriod(user, past, now, Status.DEFERRED);
+        int assignedTasks = taskRetriever.countAllAssignedTasksInPeriod(user.getId(), past, now);
+
+        double avgInprogressDate = Math.round(((double) avgInprogressTasks / ChronoUnit.DAYS.between(past, now)) * 10) / 10.0;
+        double avgDeferredRate = 0;
+        if (assignedTasks != 0) { // 할당된 작업이 있는 경우에만 계산
+            avgDeferredRate = Math.round(((double) avgDeferredTasks / assignedTasks) * 1000) / 10.0;
+        }
         return TaskDashboardDto.builder()
                 .completeTasks(completeTasks)
                 .avgInprogressTasks(avgInprogressDate)
