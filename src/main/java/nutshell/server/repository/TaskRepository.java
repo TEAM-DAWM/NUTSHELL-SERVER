@@ -5,6 +5,7 @@ import nutshell.server.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,4 +38,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             , nativeQuery = true
     )
     List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(final Long userId);
+
+    // 설정한 기간 내의 assigned 된 일들 찾는 거
+    @Query(
+            value = "select count(*) from task t where t.user_id = :userId " +
+                    "AND t.assigned_date BETWEEN :startDate AND :endDate"
+            ,nativeQuery = true
+    )
+    Integer countAllAssignedTasksInPeriod(final Long userId, final LocalDate startDate, final LocalDate endDate);
 }
