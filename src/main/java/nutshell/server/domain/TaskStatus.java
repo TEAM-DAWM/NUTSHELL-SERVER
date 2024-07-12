@@ -35,6 +35,9 @@ public class TaskStatus {
     @JoinColumn(name="task_id", nullable = false)
     private Task task;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "taskStatus")
+    private TimeBlock timeBlock;
+
     @Builder
     public TaskStatus(Status status, Task task, LocalDate targetDate) {
         this.status = status;
@@ -47,5 +50,9 @@ public class TaskStatus {
     public void updateStatus(Status status) {
         this.status = status;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateTimeBlock(){
+        this.timeBlock = null;
     }
 }

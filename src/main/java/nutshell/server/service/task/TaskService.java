@@ -12,6 +12,7 @@ import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
 import nutshell.server.service.taskStatus.*;
+import nutshell.server.service.timeBlock.TimeBlockRemover;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class TaskService {
     private final TaskSaver taskSaver;
     private final TaskRemover taskRemover;
     private final TimeBlockRetriever timeBlockRetriever;
-
+    private final TimeBlockRemover timeBlockRemover;
 
     @Transactional
     public void updateStatus(
@@ -101,6 +102,12 @@ public class TaskService {
             TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(
                     task, taskStatusDto.targetDate()
             );
+            if (status.equals(Status.DEFERRED)) {
+                TimeBlock timeBlock = timeBlockRetriever.findByTaskStatus(taskStatus);
+                //영속성을 끊어주기 위해서 taskStatus의 timeBlock을 null로 변경
+                taskStatus.updateTimeBlock();
+                timeBlockRemover.removeById(timeBlock.getId());
+            }
             taskStatusUpdater.updateStatus(taskStatus, status);
         }
         taskUpdater.updateStatus(task, status);

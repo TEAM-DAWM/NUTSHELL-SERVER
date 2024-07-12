@@ -3,6 +3,7 @@ package nutshell.server.service.timeBlock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.domain.Task;
+import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
@@ -11,11 +12,14 @@ import nutshell.server.dto.timeBlock.request.TimeBlockCreateDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockUpdateDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
+import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.service.googleCalendar.GoogleCalendarService;
 import nutshell.server.service.task.TaskRetriever;
+import nutshell.server.service.taskStatus.TaskStatusRemover;
 import nutshell.server.service.taskStatus.TaskStatusRetriever;
+import nutshell.server.service.taskStatus.TaskStatusSaver;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,8 @@ public class TimeBlockService {
     private final UserRetriever userRetriever;
     private final TaskStatusRetriever taskStatusRetriever;
     private final GoogleCalendarService googleCalendarService;
+    private final TaskStatusSaver taskStatusSaver;
+    private final TaskStatusRemover taskStatusRemover;
     @Transactional
     public TimeBlock create(
             final Long userId,
@@ -59,18 +65,27 @@ public class TimeBlockService {
         //timeBlock생성일에 이미 같은 task의 timeBlock이 있다면
         if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
                 task,
-                timeBlockCreateDto.startTime(),
+                timeBlockCreateDto.startTime().toLocalDate().atStartOfDay(),
                 timeBlockCreateDto.startTime().toLocalDate().atTime(23,59,59)
         )) {
-            log.info("{}", task.getId());
             throw new BusinessException(BusinessErrorCode.DAY_CONFLICT);
         }
         if (!taskStatusRetriever.existsByTaskAndTargetDate(task, timeBlockCreateDto.startTime().toLocalDate())) {
-            log.info("{}", task.getId());
-            throw new BusinessException(BusinessErrorCode.DENY_DAY);
+            if (timeBlockCreateDto.startTime().toLocalDate().isAfter(LocalDate.now().minusDays(1)) && task.getStatus() == Status.TODO) {
+                taskStatusRemover.removeAll(taskStatusRetriever.findAllByTask(task, timeBlockCreateDto.startTime().toLocalDate()));
+                taskStatusSaver.save(
+                        TaskStatus.builder()
+                                .task(task)
+                                .status(task.getStatus())
+                                .targetDate(timeBlockCreateDto.startTime().toLocalDate())
+                                .build()
+                );
+            } else
+                throw new BusinessException(BusinessErrorCode.DENY_DAY);
         }
+        TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(task, timeBlockCreateDto.startTime().toLocalDate());
         return timeBlockSaver.save(TimeBlock.builder()
-                .task(task)
+                .taskStatus(taskStatus)
                 .startTime(timeBlockCreateDto.startTime())
                 .endTime(timeBlockCreateDto.endTime())
                 .build()

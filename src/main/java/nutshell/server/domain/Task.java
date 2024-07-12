@@ -54,9 +54,6 @@ public class Task {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy="task", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-    private List<TimeBlock> timeBlocks;
-
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TaskStatus> taskStatuses;
 
