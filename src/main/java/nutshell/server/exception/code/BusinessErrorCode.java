@@ -18,6 +18,7 @@ public enum BusinessErrorCode implements DefaultErrorCode{
     DENY_DAY(HttpStatus.OK, "conflict", "해당 날짜에는 작업을 할당할 수 없습니다"),
     BUSINESS_TODAY(HttpStatus.OK, "conflict", "오늘 이전 날짜로는 할당할 수 없습니다"),
     BUSINESS_DUP_DAY(HttpStatus.OK, "conflict", "이미 할당된 날짜입니다"),
+    BUSINESS_PERIOD(HttpStatus.OK,"conflict","기간을 설정해 주세요."),
     ;
     @JsonIgnore
     private final HttpStatus httpStatus;

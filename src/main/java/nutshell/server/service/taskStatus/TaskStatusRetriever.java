@@ -62,4 +62,14 @@ public class TaskStatusRetriever {
     ) {
         return taskStatusRepository.findAllByTargetDateAndStatusDesc(user, targetDate, status);
     }
+
+    // 특정 상태였던 일 가져오기
+    public Integer countAllTasksInPeriod(
+            final User user,
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final Status status
+    ){
+        return taskStatusRepository.countAllTasksInPeriod(user, startDate, endDate, status);
+    }
 }
