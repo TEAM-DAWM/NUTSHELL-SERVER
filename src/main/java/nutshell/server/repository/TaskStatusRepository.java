@@ -18,12 +18,14 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
             final LocalDate targetDate,
             final Status status
     );
+
     //Task를 상속 받고 있고 해당 targetDate를 가지고 있으며 Deferred 상태가 아닌 것이 있는지 반환
     Boolean existsByTaskAndTargetDateAndStatusNot(
             final Task task,
             final LocalDate targetDate,
             final Status status
     );
+
     //Task를 상속 받고 있고 해당 targetDate를 가지고 있으며 Deferred 상태가 아닌 것을 찾아 반환
     Optional<TaskStatus> findByTaskAndTargetDateAndStatusNot(final Task task, final LocalDate targetDate, final Status status);
 
@@ -32,10 +34,17 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
 
     @Query(value = "select * from task_status ts where ts.target_date = :targetDate " +
             "and ts.status is not 'DEFERRED' and ts.status is not 'DONE'"
-    ,nativeQuery = true)
+            , nativeQuery = true)
     List<TaskStatus> findAllByTargetDate(final LocalDate targetDate);
 
     @Query(value = "select ts from TaskStatus ts where ts.task.user = :user and ts.targetDate = :targetDate " +
             "and ts.status = :status order by ts.updatedAt desc, ts.task.assignedDate desc")
     List<TaskStatus> findAllByTargetDateAndStatusDesc(final User user, final LocalDate targetDate, final Status status);
+
+    // 설정한 기간 내의 'status' 이었던 일들 모두 가져오기
+    @Query(
+            "select count(ts) from TaskStatus ts where ts.task.user = :user and ts.targetDate between :startDate and :endDate " +
+                    "and ts.status = :status"
+    )
+    Integer countAllTasksInPeriod(final User user, final LocalDate startDate, final LocalDate endDate, final Status status);
 }
