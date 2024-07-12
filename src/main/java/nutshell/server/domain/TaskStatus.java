@@ -51,8 +51,4 @@ public class TaskStatus {
         this.status = status;
         this.updatedAt = LocalDateTime.now();
     }
-
-    public void updateTimeBlock(){
-        this.timeBlock = null;
-    }
 }
