@@ -15,8 +15,4 @@ public class TimeBlockRemover {
     public void remove(final TimeBlock timeBlock) {
         timeBlockRepository.delete(timeBlock);
     }
-
-    public void removeById(final Long id) {
-        timeBlockRepository.deleteById(id);
-    }
 }
