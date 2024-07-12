@@ -36,6 +36,6 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
     List<TaskStatus> findAllByTargetDate(final LocalDate targetDate);
 
     @Query(value = "select ts from TaskStatus ts where ts.task.user = :user and ts.targetDate = :targetDate " +
-            "and ts.status = :status order by ts.updatedAt desc, ts.task.assignedDate desc")
+            "and ts.status = :status order by ts.updatedAt desc, ts.createdAt desc")
     List<TaskStatus> findAllByTargetDateAndStatusDesc(final User user, final LocalDate targetDate, final Status status);
 }
