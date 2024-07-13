@@ -2,6 +2,7 @@ package nutshell.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
+import nutshell.server.dto.googleCalender.response.GoogleCategoriesDto;
 import nutshell.server.service.googleCalendar.GoogleCalendarService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,12 @@ public class GoogleCalendarController {
     ) {
         googleCalendarService.unlink(userId, googleCalendarId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/google/calendars/categories")
+    public ResponseEntity<GoogleCategoriesDto> getCategories(
+            @UserId final Long userId
+    ) {
+        return ResponseEntity.ok(googleCalendarService.getCategories(userId));
     }
 }
