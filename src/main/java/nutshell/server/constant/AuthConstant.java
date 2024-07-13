@@ -8,6 +8,8 @@ public class AuthConstant {
     public static final String[] AUTH_WHITELIST = {
             "/actuator/health",
             "/api/auth/google/login",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
     };
     private AuthConstant() {
     }
