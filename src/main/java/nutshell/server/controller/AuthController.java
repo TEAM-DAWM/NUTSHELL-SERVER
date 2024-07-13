@@ -14,7 +14,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/login/google")
+    @PostMapping("/auth/login/google")
     public ResponseEntity<Void> googleLogin(
             @RequestParam final String code
     ) {
