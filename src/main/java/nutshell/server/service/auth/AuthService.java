@@ -60,7 +60,6 @@ public class AuthService {
 
     @Transactional
     public JwtTokensDto googleLogin(final String code) {
-        log.info("{}", code);
         GoogleTokenResponse googleTokenResponse = googleAuthClient.googleAuth( // 구글 인증 API 호출
                code, // 클라이언트에서 받은 인증 코드
                 //구글 API에 필요한 클라이언트 정보
