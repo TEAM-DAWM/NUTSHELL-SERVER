@@ -10,8 +10,10 @@ import nutshell.server.dto.task.*;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
+import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
+import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.service.taskStatus.*;
 import nutshell.server.service.timeBlock.TimeBlockRemover;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
@@ -228,6 +230,48 @@ public class TaskService {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         taskUpdater.editDetails(task, taskDetailEditDto);
+    }
+
+    public TodoTaskDto getTasksOfType(final Long userId, final String type){
+        User user = userRetriever.findByUserId(userId);
+        List<Task> tasks = new ArrayList<>();
+
+        if (type.equals("upcoming")){
+            tasks = taskRetriever.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+        } else if (type.equals("inprogress")) {
+           return TodoTaskDto.builder().tasks(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, LocalDate.now(), Status.IN_PROGRESS)
+                   .stream().map(
+                           taskStatus -> TodoTaskDto.TaskComponentDto.builder()
+                                   .id(taskStatus.getTask().getId())
+                                   .name(taskStatus.getTask().getName())
+                                   .deadLine(
+                                           new TaskCreateDto.DeadLine(
+                                                   taskStatus.getTask().getDeadLine().toLocalDate(),
+                                                   taskStatus.getTask().getDeadLine().getHour() + ":" +
+                                                           taskStatus.getTask().getDeadLine().getMinute()
+                                           )
+                                   ).build()
+                   ).toList()
+           ).build();
+        } else if (type.equals("deferred")) {
+            tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
+        } else {
+            throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
+        }
+        return TodoTaskDto.builder()
+                .tasks(
+                        tasks.stream().map( task -> TodoTaskDto.TaskComponentDto.builder()
+                                .id(task.getId())
+                                .name(task.getName())
+                                .deadLine(
+                                        new TaskCreateDto.DeadLine(
+                                                task.getDeadLine().toLocalDate(),
+                                                task.getDeadLine().getHour() + ":" +
+                                                        task.getDeadLine().getMinute()
+                                        )
+                                ).build()
+                        ).toList()
+                ).build();
     }
 
     // 마지막 API

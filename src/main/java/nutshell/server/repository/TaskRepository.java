@@ -39,6 +39,24 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     )
     List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(final Long userId);
 
+    @Query(
+            value = "select * from task t where t.user_id = :userId " +
+                    "AND t.assigned_date is null " +
+                    "AND t.dead_line <= now() + interval '2 days' " +
+                    "AND t.dead_line >= now() " +
+                    "order by t.dead_line asc nulls last"
+            ,nativeQuery = true
+    )
+    List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId);
+
+    @Query(
+            value = "select * from task t where t.user_id = :userId " +
+                    "AND t.status = 'DEFERRED' AND t.assigned_date is null " +
+                    "order by t.dead_line nulls last"
+            ,nativeQuery = true
+    )
+    List<Task> findAllDeferredTasksByUserWithStatus(final Long userId);
+
     // 설정한 기간 내의 assigned 된 일들 찾는 거
     @Query(
             value = "select count(*) from task t where t.user_id = :userId " +
