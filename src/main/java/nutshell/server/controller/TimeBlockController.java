@@ -5,8 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
-import nutshell.server.dto.timeBlock.request.TimeBlockCreateDto;
-import nutshell.server.dto.timeBlock.request.TimeBlockUpdateDto;
+import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.service.timeBlock.TimeBlockService;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,9 @@ public class TimeBlockController {
     public ResponseEntity<Void> createTimeBlock(
             @UserId final Long userId,
             @PathVariable final Long taskId,
-            @RequestBody @Valid final TimeBlockCreateDto timeBlockCreateDto
+            @RequestBody @Valid final TimeBlockRequestDto timeBlockRequestDto
     ) {
-        URI uri = URI.create(timeBlockService.create(userId, taskId, timeBlockCreateDto).getId().toString());
+        URI uri = URI.create(timeBlockService.create(userId, taskId, timeBlockRequestDto).getId().toString());
         return ResponseEntity.created(uri).build();
     }
 
@@ -36,9 +35,9 @@ public class TimeBlockController {
             @UserId final Long userId,
             @PathVariable final Long taskId,
             @PathVariable final Long timeBlockId,
-            @RequestBody final TimeBlockUpdateDto timeBlockUpdateDto
+            @RequestBody @Valid final TimeBlockRequestDto timeBlockRequestDto
     ) {
-        timeBlockService.update(userId, taskId, timeBlockId, timeBlockUpdateDto);
+        timeBlockService.update(userId, taskId, timeBlockId, timeBlockRequestDto);
         return ResponseEntity.noContent().build();
     }
 
