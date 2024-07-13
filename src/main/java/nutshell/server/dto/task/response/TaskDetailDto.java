@@ -1,10 +1,12 @@
-package nutshell.server.dto.task;
+package nutshell.server.dto.task.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+import nutshell.server.dto.task.request.TaskCreateDto;
+
 import java.time.LocalDateTime;
 
 @Builder
-public record TaskDto(
+public record TaskDetailDto(
         String name,
         String description,
         TaskCreateDto.DeadLine deadLine,

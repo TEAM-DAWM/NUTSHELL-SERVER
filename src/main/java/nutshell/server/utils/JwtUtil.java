@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.constant.AuthConstant;
-import nutshell.server.dto.auth.JwtTokensDto;
+import nutshell.server.dto.auth.response.JwtTokensDto;
 import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.UnAuthorizedErrorCode;
 import org.springframework.beans.factory.InitializingBean;

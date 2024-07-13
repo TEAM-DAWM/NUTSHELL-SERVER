@@ -6,7 +6,14 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.task.*;
+import nutshell.server.dto.task.request.TargetDateDto;
+import nutshell.server.dto.task.request.TaskCreateDto;
+import nutshell.server.dto.task.request.TaskStatusDto;
+import nutshell.server.dto.task.request.TaskUpdateDto;
+import nutshell.server.dto.task.response.TaskDashboardDto;
+import nutshell.server.dto.task.response.TaskDetailDto;
+import nutshell.server.dto.task.response.TasksDto;
+import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
@@ -24,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,26 +157,33 @@ public class TaskService {
         taskRemover.deleteTask(task);
     }
 
-    public TaskDto getTaskDetails(final Long userId, final Long taskId, final TargetDateDto targetDateDto) {
+    public TaskDetailDto getTaskDetails(final Long userId, final Long taskId, final TargetDateDto targetDateDto) {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-
         LocalDate date = task.getDeadLine() != null
                 ? task.getDeadLine().toLocalDate() : null;
         String time = task.getDeadLine() != null
                 ? task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute() : null;
-
-        TimeBlock tb = timeBlockRetriever.findByTaskIdAndTargetDate(task, targetDateDto.targetDate()); //timeblock 찾아옴
-        TaskDto.TimeBlock timeBlock = (tb == null) ? null
-                : TaskDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
-
-        return TaskDto.builder()
-                .name(task.getName())
-                .description(task.getDescription())
-                .status(taskStatusRetriever.findByTaskAndTargetDate(task, targetDateDto.targetDate()).getStatus().getContent())
-                .deadLine(new TaskCreateDto.DeadLine(date, time))
-                .timeBlock(timeBlock)
-                .build();
+        TimeBlock tb = targetDateDto == null ? null : timeBlockRetriever.findByTaskIdAndTargetDate(task, targetDateDto.targetDate()); //timeblock 찾아옴
+        TaskDetailDto.TimeBlock timeBlock = (tb == null) ? null
+                : TaskDetailDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
+        if (targetDateDto == null){
+            return TaskDetailDto.builder()
+                    .name(task.getName())
+                    .description(task.getDescription())
+                    .status(task.getStatus().getContent())
+                    .deadLine(new TaskCreateDto.DeadLine(date, time))
+                    .timeBlock(null)
+                    .build();
+        } else {
+            return TaskDetailDto.builder()
+                    .name(task.getName())
+                    .description(task.getDescription())
+                    .status(taskStatusRetriever.findByTaskAndTargetDate(task, targetDateDto.targetDate()).getStatus().getContent())
+                    .deadLine(new TaskCreateDto.DeadLine(date, time))
+                    .timeBlock(timeBlock)
+                    .build();
+        }
     }
 
     public TasksDto getTasks(
@@ -180,7 +193,7 @@ public class TaskService {
             final LocalDate targetDate
     ) {
         User user = userRetriever.findByUserId(userId);
-        List<TasksDto.TaskItemDto> taskItems;
+        List<TasksDto.TaskDto> taskItems;
         if (targetDate != null) {
             List<TaskStatus> taskStatuses = new ArrayList<>();
             taskStatuses.addAll(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, targetDate, Status.IN_PROGRESS));
@@ -188,7 +201,7 @@ public class TaskService {
             taskStatuses.addAll(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, targetDate, Status.DONE));
             taskItems = taskStatuses
                     .stream().map(
-                            taskStatus -> TasksDto.TaskItemDto.builder()
+                            taskStatus -> TasksDto.TaskDto.builder()
                                     .id(taskStatus.getTask().getId())
                                     .name(taskStatus.getTask().getName())
                                     .hasDescription(taskStatus.getTask().getDescription() != null)
@@ -211,7 +224,7 @@ public class TaskService {
                     };
             tasks = isTotal ? tasks : tasks.stream().filter(task -> task.getStatus().equals(Status.DEFERRED)).toList();
             taskItems = tasks.stream().map(
-                    task -> TasksDto.TaskItemDto.builder()
+                    task -> TasksDto.TaskDto.builder()
                             .id(task.getId())
                             .name(task.getName())
                             .hasDescription(task.getDescription() != null)
@@ -226,37 +239,36 @@ public class TaskService {
     }
 
     @Transactional
-    public void editDetail(final Long userId, final Long taskId, TaskDetailEditDto taskDetailEditDto) {
+    public void updateTask(final Long userId, final Long taskId, TaskUpdateDto taskUpdateDto) {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-        taskUpdater.editDetails(task, taskDetailEditDto);
+        taskUpdater.editDetails(task, taskUpdateDto);
     }
 
-    public TodoTaskDto getTasksOfType(final Long userId, final String type){
+    public TodoTaskDto getTodayTasks(final Long userId, final String type){
         User user = userRetriever.findByUserId(userId);
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks;
 
-        if (type.equals("upcoming")){
-            tasks = taskRetriever.findAllUpcomingTasksByUserWitAssignedStatus(userId);
-        } else if (type.equals("inprogress")) {
-           return TodoTaskDto.builder().tasks(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, LocalDate.now(), Status.IN_PROGRESS)
-                   .stream().map(
-                           taskStatus -> TodoTaskDto.TaskComponentDto.builder()
-                                   .id(taskStatus.getTask().getId())
-                                   .name(taskStatus.getTask().getName())
-                                   .deadLine(
-                                           new TaskCreateDto.DeadLine(
-                                                   taskStatus.getTask().getDeadLine().toLocalDate(),
-                                                   taskStatus.getTask().getDeadLine().getHour() + ":" +
-                                                           taskStatus.getTask().getDeadLine().getMinute()
-                                           )
-                                   ).build()
-                   ).toList()
-           ).build();
-        } else if (type.equals("deferred")) {
-            tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
-        } else {
-            throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
+        switch (type) {
+            case "upcoming" -> tasks = taskRetriever.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+            case "inprogress" -> {
+                return TodoTaskDto.builder().tasks(taskStatusRetriever.findAllByTargetDateAndStatusDesc(user, LocalDate.now(), Status.IN_PROGRESS)
+                        .stream().map(
+                                taskStatus -> TodoTaskDto.TaskComponentDto.builder()
+                                        .id(taskStatus.getTask().getId())
+                                        .name(taskStatus.getTask().getName())
+                                        .deadLine(
+                                                new TaskCreateDto.DeadLine(
+                                                        taskStatus.getTask().getDeadLine().toLocalDate(),
+                                                        taskStatus.getTask().getDeadLine().getHour() + ":" +
+                                                                taskStatus.getTask().getDeadLine().getMinute()
+                                                )
+                                        ).build()
+                        ).toList()
+                ).build();
+            }
+            case "deferred" -> tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
+            default -> throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
         }
         return TodoTaskDto.builder()
                 .tasks(

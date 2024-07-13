@@ -1,4 +1,4 @@
-package nutshell.server.dto.task;
+package nutshell.server.dto.task.response;
 
 import lombok.Builder;
 

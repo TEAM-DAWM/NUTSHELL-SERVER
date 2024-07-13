@@ -1,6 +1,7 @@
 package nutshell.server.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
@@ -24,7 +25,7 @@ public class TimeBlockController {
     public ResponseEntity<Void> createTimeBlock(
             @UserId final Long userId,
             @PathVariable final Long taskId,
-            @RequestBody final TimeBlockCreateDto timeBlockCreateDto
+            @RequestBody @Valid final TimeBlockCreateDto timeBlockCreateDto
     ) {
         URI uri = URI.create(timeBlockService.create(userId, taskId, timeBlockCreateDto).getId().toString());
         return ResponseEntity.created(uri).build();
