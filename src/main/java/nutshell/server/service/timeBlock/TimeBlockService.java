@@ -14,7 +14,9 @@ import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
+import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.code.BusinessErrorCode;
+import nutshell.server.exception.code.IllegalArgumentErrorCode;
 import nutshell.server.service.googleCalendar.GoogleCalendarService;
 import nutshell.server.service.task.TaskRetriever;
 import nutshell.server.service.taskStatus.TaskStatusRemover;
@@ -50,7 +52,7 @@ public class TimeBlockService {
     ) {
         //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockCreateDto.startTime().isAfter(timeBlockCreateDto.endTime())) {
-            throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
         }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
@@ -60,7 +62,7 @@ public class TimeBlockService {
                 timeBlockCreateDto.startTime(),
                 timeBlockCreateDto.endTime()
         )) {
-            throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_TIMEBLOCK_CONFLICT);
         }
         //timeBlock생성일에 이미 같은 task의 timeBlock이 있다면
         if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
@@ -68,7 +70,7 @@ public class TimeBlockService {
                 timeBlockCreateDto.startTime().toLocalDate().atStartOfDay(),
                 timeBlockCreateDto.startTime().toLocalDate().atTime(23,59,59)
         )) {
-            throw new BusinessException(BusinessErrorCode.DAY_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_DAY_TIMEBLOCK_CONFLICT);
         }
         if (!taskStatusRetriever.existsByTaskAndTargetDate(task, timeBlockCreateDto.startTime().toLocalDate())) {
             if (timeBlockCreateDto.startTime().toLocalDate().isAfter(LocalDate.now().minusDays(1)) && task.getStatus() == Status.TODO) {
@@ -81,7 +83,7 @@ public class TimeBlockService {
                                 .build()
                 );
             } else
-                throw new BusinessException(BusinessErrorCode.DENY_DAY);
+                throw new BusinessException(BusinessErrorCode.DENY_DAY_TIMEBLOCK_CONFLICT);
         }
         TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(task, timeBlockCreateDto.startTime().toLocalDate());
         return timeBlockSaver.save(TimeBlock.builder()
@@ -101,7 +103,7 @@ public class TimeBlockService {
     ){
         //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockUpdateDto.startTime().isAfter(timeBlockUpdateDto.endTime())) {
-            throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
         }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
@@ -113,7 +115,7 @@ public class TimeBlockService {
                 timeBlockUpdateDto.startTime(),
                 timeBlockUpdateDto.endTime()
         )) {
-            throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_TIMEBLOCK_CONFLICT);
         }
         timeBlockEditor.updateTime(timeBlock,timeBlockUpdateDto.startTime(), timeBlockUpdateDto.endTime());
     }
@@ -136,6 +138,10 @@ public class TimeBlockService {
             final Integer range,
             final CategoriesDto categoriesDto
     ){
+        if (range < 1) {
+            throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_RANGE);
+        }
+
         LocalDateTime startTime = startDate.atStartOfDay();
         LocalDateTime endTime = startDate.plusDays(range-1).atTime(23,59,59);
         User user = userRetriever.findByUserId(userId);

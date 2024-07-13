@@ -59,12 +59,12 @@ public class TaskService {
                 if (taskStatusDto.targetDate().isBefore(LocalDate.now())) // 할당 하려는 날짜가 now 보다 이전이면 예외
                     throw new BusinessException(BusinessErrorCode.BUSINESS_TODAY);
             } else if (status != Status.DONE) { // 완료랑 미완료만 staging area에서 가질 수 있으므로, 아니면 예외
-                throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
+                throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_STATUS_ARGUMENTS);
             }
 
             // targetDate에 해당하는 TaskStatus가 이미 존재하는지 확인하고, 존재하면 예외
             if (taskStatusRetriever.existsByTaskAndTargetDate(task, taskStatusDto.targetDate()))
-                throw new BusinessException(BusinessErrorCode.BUSINESS_DUP_DAY);
+                throw new BusinessException(BusinessErrorCode.DUP_DAY_CONFLICT);
 
             // task의 assignedDate를 targetDate로 업데이트하고, 새로운 TaskStatus를 저장
             taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());

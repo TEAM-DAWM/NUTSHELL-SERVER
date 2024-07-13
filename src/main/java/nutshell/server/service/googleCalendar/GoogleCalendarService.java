@@ -138,6 +138,7 @@ public class GoogleCalendarService {
                             schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
                         } catch (IOException ioException) {
                             log.error("Google Calender Error : {}", ioException.getMessage());
+                            throw new BusinessException(BusinessErrorCode.GOOGLE_CALENDAR_ERROR);
                         }
                     }
                 }
