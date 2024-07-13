@@ -50,7 +50,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(
             value = "select * from task t where t.user_id = :userId " +
-                    "AND t.status = 'DEFERRED' AND assigned_date is null " +
+                    "AND t.status = 'DEFERRED' AND t.assigned_date is null " +
                     "order by t.dead_line nulls last"
             ,nativeQuery = true
     )
