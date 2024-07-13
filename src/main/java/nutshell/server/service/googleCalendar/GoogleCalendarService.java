@@ -15,10 +15,7 @@ import nutshell.server.constant.GoogleCalendarConstant;
 import nutshell.server.domain.GoogleCalendar;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
-import nutshell.server.dto.googleCalender.response.GoogleScheduleDto;
-import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
-import nutshell.server.dto.googleCalender.response.GoogleTokenDto;
-import nutshell.server.dto.googleCalender.response.GoogleUserInfo;
+import nutshell.server.dto.googleCalender.response.*;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.service.user.UserRetriever;
@@ -149,21 +146,71 @@ public class GoogleCalendarService {
         return schedules;
     }
 
-    private static List<GoogleSchedulesDto> getEvents(
+    public GoogleCategoriesDto getCategories(
+            Long userId
+    ) {
+        User user = userRetriever.findByUserId(userId);
+        List<GoogleCategoriesDto.GoogleCategoryDto> categories = new ArrayList<>();
+        googleCalendarRetriever.findAllByUser(user)
+                .forEach(
+                        googleCalender -> {
+                            try {
+                                categories.addAll(getCategories(googleCalender));
+                            } catch (IOException e) {
+                                reissue(googleCalender);
+                                try {
+                                    categories.addAll(getCategories(googleCalender));
+                                } catch (IOException ioException) {
+                                    log.error("Google Calender Error : {}", ioException.getMessage());
+                                }
+                            }
+                        }
+                );
+        return GoogleCategoriesDto.builder()
+                .categories(categories)
+                .build();
+    }
+    private Calendar getCalender(
+            final GoogleCalendar googleCalendar
+    ) {
+        Credential credential = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
+                .setJsonFactory(JSON_FACTORY)
+                .setTransport(HTTP_TRANSPORT)
+                .build()
+                .setAccessToken(googleCalendar.getAccessToken());
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(GoogleCalendarConstant.APPLICATION_NAME)
+                .build();
+    }
+    private List<GoogleCategoriesDto.GoogleCategoryDto> getCategories(
+            final GoogleCalendar googleCalendar
+    ) throws IOException {
+        Calendar calender = getCalender(googleCalendar);
+        CalendarList calendarList = calender.calendarList().list().execute();
+        List<CalendarListEntry> items =  calendarList.getItems();
+        List<GoogleCategoriesDto.GoogleCategoryDto> categories = new ArrayList<>();
+        for (CalendarListEntry calendarListEntry : items) {
+            String calendarId = calendarListEntry.getId();
+            String calendars = calendarListEntry.getSummary();
+            String color = calendarListEntry.getBackgroundColor();
+            categories.add(GoogleCategoriesDto.GoogleCategoryDto.builder()
+                    .id(calendarId)
+                    .name(calendars)
+                    .color(color)
+                    .build()
+            );
+        }
+        return categories;
+    }
+
+    private List<GoogleSchedulesDto> getEvents(
             final GoogleCalendar googleCalendar,
             final LocalDate startDate,
             final Integer range,
             final CategoriesDto categoriesDto
     ) throws IOException {
         List<GoogleSchedulesDto> schedules = new ArrayList<>();
-        Credential credential = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
-                .setJsonFactory(JSON_FACTORY)
-                .setTransport(HTTP_TRANSPORT)
-                .build()
-                .setAccessToken(googleCalendar.getAccessToken());
-        Calendar calender = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(GoogleCalendarConstant.APPLICATION_NAME)
-                .build();
+        Calendar calender = getCalender(googleCalendar);
         CalendarList calendarList = calender.calendarList().list().execute();
         List<CalendarListEntry> items =  calendarList.getItems();
         for (CalendarListEntry calendarListEntry : items) {
@@ -223,7 +270,7 @@ public class GoogleCalendarService {
         googleCalendarUpdater.updateTokens(googleCalendar, tokens.accessToken());
     }
 
-    private static LocalDateTime getLocalDateTime(final EventDateTime event) {
+    private LocalDateTime getLocalDateTime(final EventDateTime event) {
         LocalDateTime time = null;
         if (event != null) {
             if (event.getDateTime() != null) {
@@ -242,5 +289,4 @@ public class GoogleCalendarService {
         }
         return time;
     }
-
 }

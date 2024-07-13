@@ -8,6 +8,7 @@ import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.repository.TaskRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,5 +51,9 @@ public class TaskRetriever {
 
     public List<Task> findAllDeferredTasksByUserWithStatus(final Long userId){
         return taskRepository.findAllDeferredTasksByUserWithStatus(userId);
+    }
+  
+    public Integer countAllAssignedTasksInPeriod(final Long userId, final LocalDate startDate, final LocalDate endDate){
+        return taskRepository.countAllAssignedTasksInPeriod(userId, startDate, endDate);
     }
 }
