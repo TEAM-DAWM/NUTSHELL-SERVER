@@ -1,6 +1,7 @@
-package nutshell.server.dto.task;
+package nutshell.server.dto.task.response;
 
 import lombok.Builder;
+import nutshell.server.dto.task.request.TaskCreateDto;
 
 import java.util.List;
 

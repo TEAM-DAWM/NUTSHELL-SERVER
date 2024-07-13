@@ -1,9 +1,17 @@
 package nutshell.server.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.task.*;
+import nutshell.server.dto.task.request.TargetDateDto;
+import nutshell.server.dto.task.request.TaskCreateDto;
+import nutshell.server.dto.task.request.TaskStatusDto;
+import nutshell.server.dto.task.request.TaskUpdateDto;
+import nutshell.server.dto.task.response.TaskDashboardDto;
+import nutshell.server.dto.task.response.TaskDetailDto;
+import nutshell.server.dto.task.response.TasksDto;
+import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.service.task.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +39,7 @@ public class TaskController {
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
             @UserId final Long userId,
-            @RequestBody final TaskCreateDto taskCreateDto
+            @RequestBody @Valid final TaskCreateDto taskCreateDto
     ){
         return ResponseEntity.created(URI.create(taskService.createTask(userId, taskCreateDto).getId().toString())).build();
     }
@@ -48,10 +56,10 @@ public class TaskController {
 
     // Task 상세조회 GET API
     @GetMapping("/tasks/{taskId}")
-    public ResponseEntity<TaskDto> getTask(
+    public ResponseEntity<TaskDetailDto> getTask(
         @UserId final Long userId,
         @PathVariable final Long taskId,
-        @RequestBody final TargetDateDto targetDateDto
+        @RequestBody(required = false) final TargetDateDto targetDateDto
     ){
         return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
      }
@@ -67,25 +75,25 @@ public class TaskController {
     }
 
     @PatchMapping("/tasks/{taskId}")
-    public ResponseEntity<Void> editDetail(
+    public ResponseEntity<Void> updateTask(
             @UserId final Long userId,
             @PathVariable final Long taskId,
-            @RequestBody(required = false) final TaskDetailEditDto taskDetailEditDto
+            @RequestBody(required = false) final TaskUpdateDto taskUpdateDto
     ){
-        taskService.editDetail(userId, taskId, taskDetailEditDto);
+        taskService.updateTask(userId, taskId, taskUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/tasks/today")
-    public ResponseEntity<TodoTaskDto> showTaskType(
+    public ResponseEntity<TodoTaskDto> getTodayTasks(
             @UserId final Long userId,
             @RequestParam String type
     ){
-        return ResponseEntity.ok(taskService.getTasksOfType(userId, type));
+        return ResponseEntity.ok(taskService.getTodayTasks(userId, type));
     }
   
     @GetMapping("/tasks/period")
-    public ResponseEntity<TaskDashboardDto> showDashboard(
+    public ResponseEntity<TaskDashboardDto> getDashBoard(
             @UserId final Long userId,
             @RequestParam(required = false) final LocalDate startDate,
             @RequestParam(required = false) final LocalDate endDate,
