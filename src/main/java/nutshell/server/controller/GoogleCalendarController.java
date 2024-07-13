@@ -17,16 +17,16 @@ public class GoogleCalendarController {
     private final GoogleCalendarService googleCalendarService;
 
     @PostMapping("/google/calendars")
-    public ResponseEntity<Void> getTokens(
+    public ResponseEntity<Void> registerCalendar(
             @UserId final Long userId,
             @RequestParam final String code
     ) {
-        URI uri = URI.create(googleCalendarService.getToken(code, userId).getId().toString());
+        URI uri = URI.create(googleCalendarService.register(code, userId).getId().toString());
         return ResponseEntity.created(uri).build();
     }
 
     @DeleteMapping("/google/calendars/{googleCalendarId}")
-    public ResponseEntity<Void> deleteCalender(
+    public ResponseEntity<Void> deleteCalendar(
             @UserId final Long userId,
             @PathVariable final Long googleCalendarId
     ) {

@@ -1,6 +1,7 @@
 package nutshell.server.advice;
 
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.ForbiddenException;
@@ -88,5 +89,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(IllegalArgumentErrorCode.INVALID_DATE_FORMAT.getHttpStatus())
                 .body(IllegalArgumentErrorCode.INVALID_DATE_FORMAT);
+    }
+
+    //FeignClient 오류
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<BusinessErrorCode> handleException(FeignException e) {
+        log.error("handleException() in GlobalExceptionHandler throw FeignException : {}", e.getMessage());
+        return ResponseEntity
+                .status(BusinessErrorCode.GOOGLE_SERVER_ERROR.getHttpStatus())
+                .body(BusinessErrorCode.GOOGLE_SERVER_ERROR);
     }
 }
