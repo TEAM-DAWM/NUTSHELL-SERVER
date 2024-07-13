@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface GoogleInfoClient {
     @GetMapping
     GoogleUserInfoResponse googleInfo(
-            @RequestHeader(GoogleConstant.AUTHORIZATION) String accessToken
+            @RequestHeader(GoogleConstant.AUTHORIZATION) final String accessToken
     );
 
 }

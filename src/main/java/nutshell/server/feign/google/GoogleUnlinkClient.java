@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface GoogleUnlinkClient {
     @PostMapping
     void googleUnlink(
-            @RequestParam(GoogleConstant.TOKEN) String token
+            @RequestParam(GoogleConstant.TOKEN) final String token
     );
 }

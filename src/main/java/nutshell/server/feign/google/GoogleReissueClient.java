@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface GoogleReissueClient {
     @PostMapping
     GoogleTokenResponse googleReissue(
-            GoogleReissueRequest googleReissueRequest
+            final GoogleReissueRequest googleReissueRequest
     );
 }
