@@ -6,9 +6,7 @@ import nutshell.server.domain.Token;
 import nutshell.server.dto.auth.JwtTokensDto;
 import nutshell.server.dto.test.TestDto;
 import nutshell.server.dto.test.TestInput;
-import nutshell.server.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
-import nutshell.server.exception.code.ForbiddenErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
 import nutshell.server.service.token.TokenSaver;
 import nutshell.server.utils.JwtUtil;
@@ -42,11 +40,6 @@ public class TestController {
         JwtTokensDto tokens = jwtUtil.generateTokens(userId);
         tokenSaver.save(Token.builder().id(userId).refreshToken(tokens.refreshToken()).build());
         return ResponseEntity.ok(tokens);
-    }
-
-    @GetMapping("/test/forbidden-error")
-    public ResponseEntity<String> testForbiddenError() {
-        throw new ForbiddenException(ForbiddenErrorCode.FORBIDDEN);
     }
 
     @GetMapping("/test/internal-server-error")
