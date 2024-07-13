@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,15 +28,15 @@ public class TimeBlock {
     @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(targetEntity= Task.class, fetch=FetchType.LAZY)
-    @JoinColumn(name="task_id", nullable = false)
-    private Task task;
+    @OneToOne(targetEntity = TaskStatus.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_status_id", nullable = false)
+    private TaskStatus taskStatus;
 
     @Builder
-    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, Task task) {
+    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, TaskStatus taskStatus) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.task = task;
+        this.taskStatus = taskStatus;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

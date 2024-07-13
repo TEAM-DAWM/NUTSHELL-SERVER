@@ -2,6 +2,7 @@ package nutshell.server.service.timeBlock;
 
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
+import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
 import nutshell.server.dto.timeBlock.response.TimeBlockDto;
@@ -55,7 +56,7 @@ public class TimeBlockRetriever {
             final LocalDateTime startTime,
             final LocalDateTime endTime
     ) {
-        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime, startTime, endTime);
+        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetween(task, startTime, endTime);
     }
 
     public List<TimeBlockDto> findAllByTaskIdAndTimeRange(
@@ -64,5 +65,11 @@ public class TimeBlockRetriever {
             final LocalDateTime endTime
     ) {
         return timeBlockRepository.findAllByTaskIdAndTimeRange(task, startTime, endTime);
+    }
+
+    public TimeBlock findByTaskStatus(
+            final TaskStatus taskStatus
+    ){
+        return timeBlockRepository.findByTaskStatus(taskStatus).orElse(null);
     }
 }

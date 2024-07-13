@@ -39,10 +39,10 @@ public class User {
     @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<Task> tasks;
 
-    @OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     private List<GoogleCalendar> googleCalendars;
 
     @Builder

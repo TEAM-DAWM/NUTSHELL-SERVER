@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(value="select t from Task t where t.user = :user " +
             "and exists (select tb from TimeBlock tb " +
-            "where tb.task = t and tb.startTime between :startTime and :endTime " +
+            "where tb.taskStatus.task = t and tb.startTime between :startTime and :endTime " +
             "and tb.endTime between :startTime and :endTime)")
     List<Task> findAllByUserAndTimeBlocks(final User user, LocalDateTime startTime, LocalDateTime endTime);
 
