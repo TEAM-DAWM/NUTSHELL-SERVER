@@ -18,10 +18,10 @@ public class User {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="given_name", nullable = false)
+    @Column(name="given_name")
     private String givenName;
 
-    @Column(name="family_name", nullable = false)
+    @Column(name="family_name")
     private String familyName;
 
     @Column(name="image", nullable = false)
