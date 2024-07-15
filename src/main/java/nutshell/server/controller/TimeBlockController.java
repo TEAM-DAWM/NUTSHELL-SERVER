@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
+import nutshell.server.controller.swagger.TimeBlockControllerSwagger;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
@@ -17,9 +18,10 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-public class TimeBlockController {
+public class TimeBlockController implements TimeBlockControllerSwagger {
     private final TimeBlockService timeBlockService;
 
+    @Override
     @PostMapping("/{taskId}/time-blocks")
     public ResponseEntity<Void> createTimeBlock(
             @UserId final Long userId,
