@@ -49,7 +49,7 @@ public class TimeBlockService {
     ) {
         //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockRequestDto.startTime().isAfter(timeBlockRequestDto.endTime())) {
-            throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
         }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
@@ -59,7 +59,7 @@ public class TimeBlockService {
                 timeBlockRequestDto.startTime(),
                 timeBlockRequestDto.endTime()
         )) {
-            throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_TIMEBLOCK_CONFLICT);
         }
         //timeBlock생성일에 이미 같은 task의 timeBlock이 있다면
         if (timeBlockRetriever.existsByTaskAndStartTimeBetweenAndEndTimeBetween(
@@ -67,7 +67,7 @@ public class TimeBlockService {
                 timeBlockRequestDto.startTime().toLocalDate().atStartOfDay(),
                 timeBlockRequestDto.startTime().toLocalDate().atTime(23,59,59)
         )) {
-            throw new BusinessException(BusinessErrorCode.DAY_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_DAY_TIMEBLOCK_CONFLICT);
         }
         if (!taskStatusRetriever.existsByTaskAndTargetDate(task, timeBlockRequestDto.startTime().toLocalDate())) {
             if (timeBlockRequestDto.startTime().toLocalDate().isAfter(LocalDate.now().minusDays(1)) && task.getStatus() == Status.TODO) {
@@ -80,7 +80,7 @@ public class TimeBlockService {
                                 .build()
                 );
             } else
-                throw new BusinessException(BusinessErrorCode.DENY_DAY);
+                throw new BusinessException(BusinessErrorCode.DENY_DAY_TIMEBLOCK_CONFLICT);
         }
         TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(task, timeBlockRequestDto.startTime().toLocalDate());
         return timeBlockSaver.save(TimeBlock.builder()
@@ -100,7 +100,7 @@ public class TimeBlockService {
     ){
         //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockRequestDto.startTime().isAfter(timeBlockRequestDto.endTime())) {
-            throw new BusinessException(BusinessErrorCode.DATE_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
         }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
@@ -112,7 +112,7 @@ public class TimeBlockService {
                 timeBlockRequestDto.startTime(),
                 timeBlockRequestDto.endTime()
         )) {
-            throw new BusinessException(BusinessErrorCode.MULTI_CONFLICT);
+            throw new BusinessException(BusinessErrorCode.DUP_TIMEBLOCK_CONFLICT);
         }
         timeBlockEditor.updateTime(timeBlock,timeBlockRequestDto.startTime(), timeBlockRequestDto.endTime());
     }
