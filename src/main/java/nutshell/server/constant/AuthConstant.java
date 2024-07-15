@@ -7,7 +7,7 @@ public class AuthConstant {
     public static final String ANONYMOUS_USER = "anonymousUser";
     public static final String[] AUTH_WHITELIST = {
             "/actuator/health",
-            "/api/auth/google/login",
+            "/api/auth/login/google",
             "/swagger-ui/**",
             "/swagger-ui.html",
     };
