@@ -1,6 +1,7 @@
 package nutshell.server.security.filter;
 
 import lombok.NonNull;
+import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.DefaultErrorCode;
 import nutshell.server.exception.code.InternalServerErrorCode;
 import nutshell.server.exception.code.UnAuthorizedErrorCode;
@@ -40,6 +41,8 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             handleException(request, response, filterChain, UnAuthorizedErrorCode.TOKEN_UNSUPPORTED_ERROR, e);
         } catch (JwtException e) {
             handleException(request, response, filterChain, UnAuthorizedErrorCode.TOKEN_UNKNOWN_ERROR, e);
+        } catch (BusinessException e) {
+            handleException(request, response, filterChain, e.getErrorCode(), e);
         } catch (Exception e) {
             handleException(request, response, filterChain, InternalServerErrorCode.INTERNAL_SERVER_ERROR, e);
         }

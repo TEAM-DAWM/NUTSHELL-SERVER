@@ -40,11 +40,11 @@ public class GlobalExceptionHandler {
 
     // 존재하지 않는 요청에 대한 예외
     @ExceptionHandler(value={NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<NotFoundErrorCode> handleNoPageFoundException(Exception e) {
+    public ResponseEntity<BusinessErrorCode> handleNoPageFoundException(Exception e) {
         log.error("GlobalExceptionHandler catch NoHandlerFoundException : {}", e.getMessage());
         return ResponseEntity
-                .status(NotFoundErrorCode.NOT_FOUND_END_POINT.getHttpStatus())
-                .body(NotFoundErrorCode.NOT_FOUND_END_POINT);
+                .status(BusinessErrorCode.WRONG_ENTRY_POINT.getHttpStatus())
+                .body(BusinessErrorCode.WRONG_ENTRY_POINT);
     }
 
     // 기본 예외
