@@ -49,4 +49,6 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
     Integer countAllTasksInPeriod(final User user, final LocalDate startDate, final LocalDate endDate, final Status status);
 
     Boolean existsByTaskAndStatus(Task task, Status status);
+
+    List<TaskStatus> findAllByTaskAndStatusNot(Task task, Status status);
 }

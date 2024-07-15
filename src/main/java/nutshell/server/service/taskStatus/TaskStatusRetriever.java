@@ -35,11 +35,17 @@ public class TaskStatusRetriever {
         return taskStatusRepository.findAllByTaskAndTargetDateGreaterThanAndStatusNot(task, targetDate, Status.DEFERRED);
     }
 
-    public List<TaskStatus> findAllByTask(
+    public List<TaskStatus> findAllByTaskAndTargetDateNot(
             final Task task,
             final LocalDate targetDate
     ) {
         return taskStatusRepository.findAllByTaskAndStatusNotAndTargetDateNot(task, Status.DEFERRED, targetDate);
+    }
+
+    public List<TaskStatus> findAllByTask(
+            final Task task
+    ) {
+        return taskStatusRepository.findAllByTaskAndStatusNot(task, Status.DEFERRED);
     }
 
     public Boolean existsByTaskAndTargetDate(

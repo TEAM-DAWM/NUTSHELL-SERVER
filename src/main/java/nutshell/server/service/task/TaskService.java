@@ -63,9 +63,17 @@ public class TaskService {
             taskUpdater.updateAssignedDate(task, null);
             if (taskStatusRetriever.existsByTaskAndStatus(task, Status.DEFERRED)){
                 taskUpdater.updateStatus(task, Status.DEFERRED);
+                taskStatusSaver.save(
+                        TaskStatus.builder()
+                                .task(task)
+                                .status(Status.DEFERRED)
+                                .targetDate(LocalDate.now())
+                                .build()
+                );
             } else {
                 taskUpdater.updateStatus(task, Status.TODO);
             }
+            taskStatusRemover.removeAll(taskStatusRetriever.findAllByTask(task));
         } else {
             if(taskStatusDto.status() == null)
                 throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
@@ -113,7 +121,7 @@ public class TaskService {
                     }
                 } else if (status.equals(Status.TODO)) {
                     taskStatusRemover.removeAll(
-                            taskStatusRetriever.findAllByTask(task, taskStatusDto.targetDate())
+                            taskStatusRetriever.findAllByTaskAndTargetDateNot(task, taskStatusDto.targetDate())
                     );
                     if (taskStatusDto.targetDate().isBefore(LocalDate.now())) {
                         status = Status.DEFERRED;
