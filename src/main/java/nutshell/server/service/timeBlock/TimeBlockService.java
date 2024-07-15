@@ -71,7 +71,7 @@ public class TimeBlockService {
         }
         if (!taskStatusRetriever.existsByTaskAndTargetDate(task, timeBlockRequestDto.startTime().toLocalDate())) {
             if (timeBlockRequestDto.startTime().toLocalDate().isAfter(LocalDate.now().minusDays(1)) && task.getStatus() == Status.TODO) {
-                taskStatusRemover.removeAll(taskStatusRetriever.findAllByTask(task, timeBlockRequestDto.startTime().toLocalDate()));
+                taskStatusRemover.removeAll(taskStatusRetriever.findAllByTaskAndTargetDateNot(task, timeBlockRequestDto.startTime().toLocalDate()));
                 taskStatusSaver.save(
                         TaskStatus.builder()
                                 .task(task)

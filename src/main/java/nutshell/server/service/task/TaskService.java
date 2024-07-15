@@ -1,7 +1,6 @@
 package nutshell.server.service.task;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
@@ -17,10 +16,8 @@ import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
-import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
-import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.service.taskStatus.*;
 import nutshell.server.service.timeBlock.TimeBlockRemover;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
@@ -37,7 +34,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TaskService {
     private final TaskUpdater taskUpdater;
     private final TaskRetriever taskRetriever;
@@ -59,72 +55,86 @@ public class TaskService {
     ) {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-        Status status = Status.fromContent(taskStatusDto.status());
-        if (task.getAssignedDate() == null) {   //staging area에서 할당될 때
-            if (status == Status.TODO) {
-                if (taskStatusDto.targetDate().isBefore(LocalDate.now())) // 할당 하려는 날짜가 now 보다 이전이면 예외
-                    throw new BusinessException(BusinessErrorCode.BUSINESS_TODAY);
-            } else if (status != Status.DONE) { // 완료랑 미완료만 staging area에서 가질 수 있으므로, 아니면 예외
+        if (taskStatusDto.targetDate() == null){    //target area에서 staging area로 넘어갈 경우
+            taskUpdater.updateAssignedDate(task, null);
+            if (taskStatusRetriever.existsByTaskAndStatus(task, Status.DEFERRED)){
+                taskUpdater.updateStatus(task, Status.DEFERRED);
+                taskStatusSaver.save(
+                        TaskStatus.builder()
+                                .task(task)
+                                .status(Status.DEFERRED)
+                                .targetDate(LocalDate.now())
+                                .build()
+                );
+            } else {
+                taskUpdater.updateStatus(task, Status.TODO);
+            }
+            taskStatusRemover.removeAll(taskStatusRetriever.findAllByTask(task));
+        } else {
+            if(taskStatusDto.status() == null)
                 throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
-            }
-
-            // targetDate에 해당하는 TaskStatus가 이미 존재하는지 확인하고, 존재하면 예외
-            if (taskStatusRetriever.existsByTaskAndTargetDate(task, taskStatusDto.targetDate()))
-                throw new BusinessException(BusinessErrorCode.BUSINESS_DUP_DAY);
-
-            // task의 assignedDate를 targetDate로 업데이트하고, 새로운 TaskStatus를 저장
-            taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());
-            taskStatusSaver.save(
-                    TaskStatus.builder()
-                            .task(task)
-                            .status(status)
-                            .targetDate(taskStatusDto.targetDate())
-                            .build()
-            );
-        } else {    //target date area에서 수정될 때
-            if ((status == Status.DONE || status == Status.IN_PROGRESS)
-                    && taskStatusDto.targetDate().isBefore(LocalDate.now())
-            ) {    //완료 = targetDate 이후 삭제, 진행 중 = targetDate이후 값 변경
-                taskStatusRemover.removeAll(
-                        taskStatusRetriever.findAllByTaskAndTargetDateGreaterThan(
-                                task, taskStatusDto.targetDate()
-                        )
+            Status status = Status.fromContent(taskStatusDto.status());
+            if (task.getAssignedDate() == null) {   //staging area에서 할당될 때
+                if (status == Status.TODO) {
+                    if (taskStatusDto.targetDate().isBefore(LocalDate.now())) // 할당 하려는 날짜가 now 보다 이전이면 예외
+                        throw new BusinessException(BusinessErrorCode.BUSINESS_TODAY);
+                } else if (status != Status.DONE) { // 완료랑 미완료만 staging area에서 가질 수 있으므로, 아니면 예외
+                    throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
+                }
+                // task의 assignedDate를 targetDate로 업데이트하고, 새로운 TaskStatus를 저장
+                taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());
+                taskStatusSaver.save(
+                        TaskStatus.builder()
+                                .task(task)
+                                .status(status)
+                                .targetDate(taskStatusDto.targetDate())
+                                .build()
                 );
-                if (status == Status.IN_PROGRESS) {
-                    List<TaskStatus> taskStatuses = new ArrayList<>();
-                    for (LocalDate date = taskStatusDto.targetDate().plusDays(1);
-                         date.isBefore(LocalDate.now().plusDays(1));
-                         date = date.plusDays(1)
-                    ) {
-                        taskStatuses.add(
-                                TaskStatus.builder()
-                                        .task(task)
-                                        .status(status)
-                                        .targetDate(date)
-                                        .build()
-                        );
+            } else {    //target date area에서 수정될 때
+                if ((status.equals(Status.DONE) || status.equals(Status.IN_PROGRESS))
+                        && taskStatusDto.targetDate().isBefore(LocalDate.now())
+                ) {    //완료 = targetDate 이후 삭제, 진행 중 = targetDate이후 값 변경
+                    taskStatusRemover.removeAll(
+                            taskStatusRetriever.findAllByTaskAndTargetDateGreaterThan(
+                                    task, taskStatusDto.targetDate()
+                            )
+                    );
+                    if (status.equals(Status.IN_PROGRESS)) {
+                        List<TaskStatus> taskStatuses = new ArrayList<>();
+                        for (LocalDate date = taskStatusDto.targetDate().plusDays(1);
+                             date.isBefore(LocalDate.now().plusDays(1));
+                             date = date.plusDays(1)
+                        ) {
+                            taskStatuses.add(
+                                    TaskStatus.builder()
+                                            .task(task)
+                                            .status(status)
+                                            .targetDate(date)
+                                            .build()
+                            );
+                        }
+                        taskStatusSaver.saveAll(taskStatuses);
                     }
-                    taskStatusSaver.saveAll(taskStatuses);
+                } else if (status.equals(Status.TODO)) {
+                    taskStatusRemover.removeAll(
+                            taskStatusRetriever.findAllByTaskAndTargetDateNot(task, taskStatusDto.targetDate())
+                    );
+                    if (taskStatusDto.targetDate().isBefore(LocalDate.now())) {
+                        status = Status.DEFERRED;
+                        taskUpdater.updateAssignedDate(task, null);
+                    }
                 }
-            } else if (status == Status.TODO) {
-                taskStatusRemover.removeAll(
-                        taskStatusRetriever.findAllByTask(task, taskStatusDto.targetDate())
+                TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(
+                        task, taskStatusDto.targetDate()
                 );
-                if (taskStatusDto.targetDate().isBefore(LocalDate.now())) {
-                    status = Status.DEFERRED;
-                    taskUpdater.updateAssignedDate(task, null);
+                if (status.equals(Status.DEFERRED)) {
+                    TimeBlock timeBlock = timeBlockRetriever.findByTaskStatus(taskStatus);
+                    timeBlockRemover.remove(timeBlock);
                 }
+                taskStatusUpdater.updateStatus(taskStatus, status);
             }
-            TaskStatus taskStatus = taskStatusRetriever.findByTaskAndTargetDate(
-                    task, taskStatusDto.targetDate()
-            );
-            if (status.equals(Status.DEFERRED)) {
-                TimeBlock timeBlock = timeBlockRetriever.findByTaskStatus(taskStatus);
-                timeBlockRemover.remove(timeBlock);
-            }
-            taskStatusUpdater.updateStatus(taskStatus, status);
+            taskUpdater.updateStatus(task, status);
         }
-        taskUpdater.updateStatus(task, status);
     }
 
     @Transactional
@@ -268,7 +278,7 @@ public class TaskService {
                 ).build();
             }
             case "deferred" -> tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
-            default -> throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
+            default -> throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
         }
         return TodoTaskDto.builder()
                 .tasks(
@@ -303,7 +313,7 @@ public class TaskService {
             return calcDashBoard(user, startDate, endDate);
 
         } else {
-            throw new BusinessException(BusinessErrorCode.BUSINESS_PERIOD);
+            throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
         }
     }
 

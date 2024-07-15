@@ -16,12 +16,14 @@ public class TaskUpdater {
             final Task task,
             final TaskUpdateDto taskUpdateDto
     ) {
-        LocalDate date = taskUpdateDto.deadLine().date();
-        String time = taskUpdateDto.deadLine().time();
+        LocalDateTime deadLine = null;
+        if (taskUpdateDto.deadLine() != null){
+            LocalDate date = taskUpdateDto.deadLine().date();
+            String time = taskUpdateDto.deadLine().time();
 
-        String dateTimeString = date.toString() + "T" + time;
-        LocalDateTime deadLine = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
-
+            String dateTimeString = date.toString() + "T" + time;
+            deadLine = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        }
         task.updateTask(taskUpdateDto.name(), taskUpdateDto.description(), deadLine);
     }
 
