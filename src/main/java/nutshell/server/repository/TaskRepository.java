@@ -43,7 +43,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.assigned_date is null " +
                     "AND t.dead_line <= now() + interval '2 days' " +
-                    "AND t.dead_line >= now() " +
                     "order by t.dead_line asc nulls last"
             ,nativeQuery = true
     )
