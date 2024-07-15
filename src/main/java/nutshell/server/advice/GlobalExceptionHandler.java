@@ -11,6 +11,7 @@ import nutshell.server.exception.code.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -60,6 +61,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<IllegalArgumentErrorCode> handleException(MethodArgumentNotValidException e) {
         log.error("handleException() in GlobalExceptionHandler throw MethodArgumentNotValidException : {}", e.getMessage());
+        return ResponseEntity
+                .status(IllegalArgumentErrorCode.INVALID_ARGUMENTS.getHttpStatus())
+                .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<IllegalArgumentErrorCode> handleException(MissingServletRequestParameterException e) {
+        log.error("handleException() in GlobalExceptionHandler throw MissingServletRequestParameterException : {}", e.getMessage());
         return ResponseEntity
                 .status(IllegalArgumentErrorCode.INVALID_ARGUMENTS.getHttpStatus())
                 .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
