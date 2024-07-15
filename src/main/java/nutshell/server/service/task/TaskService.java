@@ -313,7 +313,7 @@ public class TaskService {
             return calcDashBoard(user, startDate, endDate);
 
         } else {
-            throw new BusinessException(BusinessErrorCode.BUSINESS_PERIOD);
+            throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
         }
     }
 
