@@ -72,4 +72,11 @@ public class TaskStatusRetriever {
     ){
         return taskStatusRepository.countAllTasksInPeriod(user, startDate, endDate, status);
     }
+
+    public Boolean existsByTaskAndStatus(
+            final Task task,
+            final Status status
+    ) {
+        return taskStatusRepository.existsByTaskAndStatus(task, status);
+    }
 }
