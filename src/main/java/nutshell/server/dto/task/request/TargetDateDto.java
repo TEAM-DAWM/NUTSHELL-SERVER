@@ -1,14 +1,11 @@
-package nutshell.server.dto.task;
+package nutshell.server.dto.task.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
 
 import java.time.LocalDate;
 
-@Builder
-public record TaskStatusDto(
+public record TargetDateDto(
         @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-        LocalDate targetDate,
-        String status
+        LocalDate targetDate
 ) {
 }

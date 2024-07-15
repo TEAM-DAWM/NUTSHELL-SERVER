@@ -1,4 +1,4 @@
-package nutshell.server.dto.auth;
+package nutshell.server.dto.auth.response;
 
 import lombok.Builder;
 

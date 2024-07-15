@@ -1,6 +1,7 @@
 package nutshell.server.advice;
 
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.NotFoundException;
@@ -9,6 +10,7 @@ import nutshell.server.exception.code.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -63,6 +65,14 @@ public class GlobalExceptionHandler {
                 .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<IllegalArgumentErrorCode> handleException(MissingServletRequestParameterException e) {
+        log.error("handleException() in GlobalExceptionHandler throw MissingServletRequestParameterException : {}", e.getMessage());
+        return ResponseEntity
+                .status(IllegalArgumentErrorCode.INVALID_ARGUMENTS.getHttpStatus())
+                .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
+    }
+
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<UnAuthorizedErrorCode> handleException(UnAuthorizedException e) {
         log.error("handleException() in GlobalExceptionHandler throw UnAuthorizedException : {}", e.getErrorCode().getMessage());
@@ -78,5 +88,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(IllegalArgumentErrorCode.INVALID_DATE_FORMAT.getHttpStatus())
                 .body(IllegalArgumentErrorCode.INVALID_DATE_FORMAT);
+    }
+
+    //FeignClient 오류
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<BusinessErrorCode> handleException(FeignException e) {
+        log.error("handleException() in GlobalExceptionHandler throw FeignException : {}", e.getMessage());
+        return ResponseEntity
+                .status(BusinessErrorCode.GOOGLE_SERVER_ERROR.getHttpStatus())
+                .body(BusinessErrorCode.GOOGLE_SERVER_ERROR);
     }
 }
