@@ -4,7 +4,6 @@ package nutshell.server.advice;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
-import nutshell.server.exception.ForbiddenException;
 import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.*;
@@ -72,15 +71,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(IllegalArgumentErrorCode.INVALID_ARGUMENTS.getHttpStatus())
                 .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
-    }
-
-    //권한이 없는 경우
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ForbiddenErrorCode> handleException(ForbiddenException e) {
-        log.error("handleException() in GlobalExceptionHandler throw ForbiddenException : {}", e.getErrorCode().getMessage());
-        return ResponseEntity
-                .status(e.getErrorCode().getHttpStatus())
-                .body(e.getErrorCode());
     }
 
     @ExceptionHandler(UnAuthorizedException.class)

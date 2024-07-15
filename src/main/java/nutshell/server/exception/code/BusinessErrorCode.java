@@ -8,17 +8,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum BusinessErrorCode implements DefaultErrorCode{
-    DONE_CONFLICT(HttpStatus.OK,"conflict","이미 완료된 작업입니다"),
-    IN_PROGRESS_CONFLICT(HttpStatus.OK,"conflict","target date에만 진행 가능합니다"),
-    MULTI_CONFLICT(HttpStatus.OK,"conflict","중복된 작업이 있습니다"),
-    DAY_CONFLICT(HttpStatus.OK, "conflict", "오늘 할당된 작업이 이미 있습니다."),
-    TODO_CONFLICT(HttpStatus.OK,"conflict","오늘 이후에만 진행 가능합니다"),
-    GOOGLE_SERVER_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "external", "구글 서버 오류"),
-    DATE_CONFLICT(HttpStatus.OK, "conflict", "시작시간이 종료시간보다 늦습니다"),
-    DENY_DAY(HttpStatus.OK, "conflict", "해당 날짜에는 작업을 할당할 수 없습니다"),
-    BUSINESS_TODAY(HttpStatus.OK, "conflict", "오늘 이전 날짜로는 할당할 수 없습니다"),
-    BUSINESS_DUP_DAY(HttpStatus.OK, "conflict", "이미 할당된 날짜입니다"),
-    BUSINESS_PERIOD(HttpStatus.OK,"conflict","기간을 설정해 주세요."),
+    TIME_CONFLICT(HttpStatus.OK, "conflict", "시작 시간은 종료 시간 이전이어야 합니다."),
+    DUP_TIMEBLOCK_CONFLICT(HttpStatus.OK,"conflict","지정된 시간 범위 내에 이미 TimeBlock이 있습니다."),
+    DUP_DAY_TIMEBLOCK_CONFLICT(HttpStatus.OK, "conflict", "지정된 날짜의 작업에 대한 TimeBlock이 이미 있습니다."),
+    DENY_DAY_TIMEBLOCK_CONFLICT(HttpStatus.OK, "conflict", "지정된 날짜에 대한 TimeBlock을 생성할 수 없습니다."),
+    DUP_DAY_CONFLICT(HttpStatus.OK, "conflict", "지정된 날짜에 이미 Task가 할당되어 있습니다."),
+    BUSINESS_TODAY(HttpStatus.OK, "conflict", "오늘 이전 날짜로는 Task를 할당할 수 없습니다."),
+    BUSINESS_PERIOD(HttpStatus.OK,"conflict","올바른 기간을 설정해 주세요."),
+    GOOGLE_SERVER_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "external", "구글 서버 내부 오류입니다."),
     ;
     @JsonIgnore
     private final HttpStatus httpStatus;
