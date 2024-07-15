@@ -16,10 +16,8 @@ import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.IllegalArgumentException;
-import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
-import nutshell.server.exception.code.NotFoundErrorCode;
 import nutshell.server.service.taskStatus.*;
 import nutshell.server.service.timeBlock.TimeBlockRemover;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
@@ -280,7 +278,7 @@ public class TaskService {
                 ).build();
             }
             case "deferred" -> tasks = taskRetriever.findAllDeferredTasksByUserWithStatus(userId);
-            default -> throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_TASK_TYPE);
+            default -> throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
         }
         return TodoTaskDto.builder()
                 .tasks(
