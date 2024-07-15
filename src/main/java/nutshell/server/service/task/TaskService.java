@@ -1,7 +1,6 @@
 package nutshell.server.service.task;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
@@ -37,7 +36,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TaskService {
     private final TaskUpdater taskUpdater;
     private final TaskRetriever taskRetriever;
