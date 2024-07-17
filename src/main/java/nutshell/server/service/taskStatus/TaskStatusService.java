@@ -22,11 +22,12 @@ public class TaskStatusService {
     private final TaskRetriever taskRetriever;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 55 0 * * *")
     public void updateDeferred(){
         taskStatusRetriever.findAllByTargetDate(LocalDate.now().minusDays(1))
                 .forEach(
                         taskStatus -> {
+
                             if (taskStatus.getStatus() == Status.TODO){
                                 Task task = taskRetriever.findById(taskStatus.getTask().getId());
                                 taskUpdater.updateStatus(task, Status.DEFERRED);
