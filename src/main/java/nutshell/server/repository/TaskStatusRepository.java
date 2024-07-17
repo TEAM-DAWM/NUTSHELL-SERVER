@@ -33,7 +33,7 @@ public interface TaskStatusRepository extends JpaRepository<TaskStatus, Long> {
     List<TaskStatus> findAllByTaskAndStatusNotAndTargetDateNot(final Task task, final Status status, final LocalDate targetDate);
 
     @Query(value = "select * from task_status ts where ts.target_date = :targetDate " +
-            "and ts.status is not 'DEFERRED' and ts.status is not 'DONE'"
+            "and ts.status not in ('DEFERRED', 'DONE')"
             , nativeQuery = true)
     List<TaskStatus> findAllByTargetDate(final LocalDate targetDate);
 
