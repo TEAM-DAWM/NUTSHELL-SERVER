@@ -16,6 +16,8 @@ import nutshell.server.domain.GoogleCalendar;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.*;
+import nutshell.server.exception.BusinessException;
+import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.feign.google.GoogleReissueRequest;
 import nutshell.server.feign.google.GoogleTokenResponse;
 import nutshell.server.feign.google.GoogleUserInfoResponse;
@@ -43,6 +45,7 @@ public class GoogleCalendarService {
     private final GoogleCalendarUpdater googleCalendarUpdater;
     private final GoogleCalendarRemover googleCalendarRemover;
     private final GoogleService googleService;
+    private final GoogleCalendarSaver googleCalendarSaver;
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final NetHttpTransport HTTP_TRANSPORT;
@@ -71,7 +74,17 @@ public class GoogleCalendarService {
         assert tokens != null;
         GoogleUserInfoResponse data = googleService.getUserInfo(tokens.accessToken());
         assert data != null;
-        return googleCalendarRetriever.findByUserAndEmail(user, tokens, data);
+        if(googleCalendarRetriever.existsByUserAndEmail(user, data.email())){
+            throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_EXIST);
+        }
+        return googleCalendarSaver.save(
+                GoogleCalendar.builder()
+                        .user(user)
+                        .email(data.email())
+                        .accessToken(tokens.accessToken())
+                        .refreshToken(tokens.refreshToken())
+                        .build()
+        );
     }
 
     @Transactional

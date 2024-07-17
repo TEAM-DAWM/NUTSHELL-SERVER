@@ -11,5 +11,5 @@ public interface GoogleCalendarRepository extends JpaRepository<GoogleCalendar, 
     Optional<GoogleCalendar> findByIdAndUser(final Long id, final User user);
     List<GoogleCalendar> findAllByUser(final User user);
 
-    Optional<GoogleCalendar> findByUserAndEmail(final User user, final String email);
+    Boolean existsByUserAndEmail(final User user, final String email);
 }
