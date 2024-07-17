@@ -39,7 +39,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleCalendarService {
     private final UserRetriever userRetriever;
-    private final GoogleCalendarSaver googleCalendarSaver;
     private final GoogleCalendarRetriever googleCalendarRetriever;
     private final GoogleCalendarUpdater googleCalendarUpdater;
     private final GoogleCalendarRemover googleCalendarRemover;
@@ -72,14 +71,7 @@ public class GoogleCalendarService {
         assert tokens != null;
         GoogleUserInfoResponse data = googleService.getUserInfo(tokens.accessToken());
         assert data != null;
-        GoogleCalendar googleCalendar = GoogleCalendar.builder()
-                .user(user)
-                .accessToken(tokens.accessToken())
-                .refreshToken(tokens.refreshToken())
-                .serialId(data.sub())
-                .email(data.email())
-                .build();
-        return googleCalendarSaver.save(googleCalendar);
+        return googleCalendarRetriever.findByUserAndEmail(user, tokens, data);
     }
 
     @Transactional
