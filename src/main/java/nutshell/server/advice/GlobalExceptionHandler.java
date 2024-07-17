@@ -2,6 +2,7 @@ package nutshell.server.advice;
 
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.NotFoundException;
