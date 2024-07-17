@@ -44,8 +44,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<NotFoundErrorCode> handleNoPageFoundException(Exception e) {
         log.error(e.getMessage(), e);
         return ResponseEntity
-                .status(NotFoundErrorCode.NOT_FOUND_END_POINT.getHttpStatus())
-                .body(NotFoundErrorCode.NOT_FOUND_END_POINT);
+                .status(BusinessErrorCode.WRONG_ENTRY_POINT.getHttpStatus())
+                .body(BusinessErrorCode.WRONG_ENTRY_POINT);
     }
 
     // 기본 예외

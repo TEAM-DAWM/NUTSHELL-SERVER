@@ -2,8 +2,8 @@ package nutshell.server.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nutshell.server.dto.common.ResponseDto;
+import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.exception.code.DefaultErrorCode;
-import nutshell.server.exception.code.UnAuthorizedErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -24,10 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {  
             final AuthenticationException authException
     ) throws IOException {
         DefaultErrorCode errorCode = (DefaultErrorCode) request.getAttribute("exception");
-        if (errorCode == null) {
-            errorCode = UnAuthorizedErrorCode.UNAUTHORIZED;
-            // 이 부분 수정 필요함
-        }
+        if (errorCode == null)
+            errorCode = BusinessErrorCode.WRONG_ENTRY_POINT;
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(errorCode.getHttpStatus().value());
