@@ -91,7 +91,7 @@ public class GoogleCalendarService {
     }
 
     @Transactional
-    public List<GoogleSchedulesDto> getGoogleCalenders(
+    public List<GoogleSchedulesDto> getGoogleCalendars(
             final Long userId,
             final LocalDate startDate,
             final Integer range,
@@ -143,7 +143,7 @@ public class GoogleCalendarService {
                 .build();
     }
 
-    private Calendar getCalender(
+    private Calendar getCalendar(
             final GoogleCalendar googleCalendar
     ) {
         Credential credential = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
@@ -159,7 +159,7 @@ public class GoogleCalendarService {
     private List<GoogleCategoriesDto.GoogleCategoryDto> getCategories(
             final GoogleCalendar googleCalendar
     ) throws IOException {
-        Calendar calender = getCalender(googleCalendar);
+        Calendar calender = getCalendar(googleCalendar);
         CalendarList calendarList = calender.calendarList().list().execute();
         List<CalendarListEntry> items =  calendarList.getItems();
         List<GoogleCategoriesDto.GoogleCategoryDto> categories = new ArrayList<>();
@@ -184,7 +184,7 @@ public class GoogleCalendarService {
             final CategoriesDto categoriesDto
     ) throws IOException {
         List<GoogleSchedulesDto> schedules = new ArrayList<>();
-        Calendar calender = getCalender(googleCalendar);
+        Calendar calender = getCalendar(googleCalendar);
         CalendarList calendarList = calender.calendarList().list().execute();
         List<CalendarListEntry> items =  calendarList.getItems();
         for (CalendarListEntry calendarListEntry : items) {
