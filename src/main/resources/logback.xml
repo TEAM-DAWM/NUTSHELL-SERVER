@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 로그 패턴 설정 -->
+    <property name="LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
+
+    <!-- Spring 프로퍼티 설정 -->
+    <springProperty name="DISCORD_WEBHOOK_URI" source="logging.discord.webhook-uri"/>
+
+    <!-- 외부 appender 설정 파일 포함 -->
+    <include resource="console-appender.xml"/>
+    <include resource="discord-appender.xml"/>
+
+    <!-- 파일 로그 설정 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/my_app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 매일 새로운 파일로 롤오버 -->
+            <fileNamePattern>logs/my_app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 최대 30개의 로그 파일을 보관 -->
+            <maxHistory>30</maxHistory>
+            <!-- 총 로그 파일 크기 제한 (옵션) -->
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 루트 로거 설정 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ASYNC_DISCORD" />
+    </root>
+</configuration>
