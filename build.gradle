@@ -17,10 +17,17 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+
 }
+
+configurations.all {
+	exclude group: 'commons-logging', module: 'commons-logging'
+}
+
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -62,6 +69,9 @@ dependencies {
 
 	// P6Spy
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
+	// Discord-appender
+	implementation('com.github.napstr:logback-discord-appender:1.0.0')
 }
 
 ext {
