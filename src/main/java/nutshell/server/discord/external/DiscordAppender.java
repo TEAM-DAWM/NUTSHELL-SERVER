@@ -47,7 +47,6 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         String exceptionBrief = "";
         String exceptionDetail = "";
         IThrowableProxy throwable = eventObject.getThrowableProxy();
-        log.info("{}", eventObject.getMessage());
 
         if (throwable != null) {
             exceptionBrief = throwable.getClassName() + ": " + throwable.getMessage();
@@ -99,7 +98,6 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                             .setDescription(StringEscapeUtils.escapeJson(exception))
             );
         }
-
         try {
             discordWebhook.execute();
         } catch (IOException ioException) {
