@@ -114,7 +114,7 @@
 
 
 ## 🌱 ERD
-<img width="1385" alt="image" src="https://github.com/TEAM-DAWM/NUTSHELL-SERVER/assets/103352114/0a728c4e-4437-4872-b5eb-7c815186eb5f">
+<img width="433" alt="image" src="https://github.com/user-attachments/assets/867f6ae3-20a3-413a-b4f4-05eb62656b97">
 
 &nbsp;
 
