@@ -22,6 +22,7 @@ import nutshell.server.service.taskStatus.*;
 import nutshell.server.service.timeBlock.TimeBlockRemover;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
+import nutshell.server.utils.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -170,19 +171,16 @@ public class TaskService {
     public TaskDetailDto getTaskDetails(final Long userId, final Long taskId, final TargetDateDto targetDateDto) {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
-        LocalDate date = task.getDeadLine() != null
-                ? task.getDeadLine().toLocalDate() : null;
-        String time = task.getDeadLine() != null
-                ? task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute() : null;
         TimeBlock tb = targetDateDto == null ? null : timeBlockRetriever.findByTaskIdAndTargetDate(task, targetDateDto.targetDate()); //timeblock 찾아옴
         TaskDetailDto.TimeBlock timeBlock = (tb == null) ? null
                 : TaskDetailDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
+        TaskCreateDto.DeadLine deadLine = DateUtil.getDeadLine(task.getDeadLine());
         if (targetDateDto == null){
             return TaskDetailDto.builder()
                     .name(task.getName())
                     .description(task.getDescription())
                     .status(task.getStatus().getContent())
-                    .deadLine(new TaskCreateDto.DeadLine(date, time))
+                    .deadLine(deadLine)
                     .timeBlock(null)
                     .build();
         } else {
@@ -190,7 +188,7 @@ public class TaskService {
                     .name(task.getName())
                     .description(task.getDescription())
                     .status(taskStatusRetriever.findByTaskAndTargetDate(task, targetDateDto.targetDate()).getStatus().getContent())
-                    .deadLine(new TaskCreateDto.DeadLine(date, time))
+                    .deadLine(deadLine)
                     .timeBlock(timeBlock)
                     .build();
         }
@@ -216,10 +214,8 @@ public class TaskService {
                                     .name(taskStatus.getTask().getName())
                                     .hasDescription(taskStatus.getTask().getDescription() != null)
                                     .status(taskStatus.getStatus().getContent())
-                                    .deadLine(new TaskCreateDto.DeadLine(
-                                            taskStatus.getTask().getDeadLine().toLocalDate(),
-                                            taskStatus.getTask().getDeadLine().getHour() + ":" + taskStatus.getTask().getDeadLine().getMinute()
-                                    )).build()
+                                    .deadLine(DateUtil.getDeadLine(taskStatus.getTask().getDeadLine()))
+                                    .build()
                     ).toList();
         } else {
             List<Task> tasks = order == null ? taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user)
@@ -239,10 +235,7 @@ public class TaskService {
                             .name(task.getName())
                             .hasDescription(task.getDescription() != null)
                             .status(task.getStatus().getContent())
-                            .deadLine(new TaskCreateDto.DeadLine(
-                                    task.getDeadLine().toLocalDate(),
-                                    task.getDeadLine().getHour() + ":" + task.getDeadLine().getMinute()
-                            )).build()
+                            .deadLine(DateUtil.getDeadLine(task.getDeadLine())).build()
             ).toList();
         }
         return TasksDto.builder().tasks(taskItems).build();
@@ -267,13 +260,8 @@ public class TaskService {
                                 taskStatus -> TodoTaskDto.TaskComponentDto.builder()
                                         .id(taskStatus.getTask().getId())
                                         .name(taskStatus.getTask().getName())
-                                        .deadLine(
-                                                new TaskCreateDto.DeadLine(
-                                                        taskStatus.getTask().getDeadLine().toLocalDate(),
-                                                        taskStatus.getTask().getDeadLine().getHour() + ":" +
-                                                                taskStatus.getTask().getDeadLine().getMinute()
-                                                )
-                                        ).build()
+                                        .deadLine(DateUtil.getDeadLine(taskStatus.getTask().getDeadLine()))
+                                        .build()
                         ).toList()
                 ).build();
             }
@@ -285,13 +273,8 @@ public class TaskService {
                         tasks.stream().map( task -> TodoTaskDto.TaskComponentDto.builder()
                                 .id(task.getId())
                                 .name(task.getName())
-                                .deadLine(
-                                        new TaskCreateDto.DeadLine(
-                                                task.getDeadLine().toLocalDate(),
-                                                task.getDeadLine().getHour() + ":" +
-                                                        task.getDeadLine().getMinute()
-                                        )
-                                ).build()
+                                .deadLine(DateUtil.getDeadLine(task.getDeadLine()))
+                                .build()
                         ).toList()
                 ).build();
     }
