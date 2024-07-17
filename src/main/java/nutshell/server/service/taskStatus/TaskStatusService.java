@@ -6,6 +6,7 @@ import nutshell.server.domain.TaskStatus;
 import nutshell.server.dto.type.Status;
 import nutshell.server.service.task.TaskRetriever;
 import nutshell.server.service.task.TaskUpdater;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,28 +22,29 @@ public class TaskStatusService {
     private final TaskStatusSaver taskStatusSaver;
     private final TaskRetriever taskRetriever;
 
-    @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void updateDeferred(){
         taskStatusRetriever.findAllByTargetDate(LocalDate.now().minusDays(1))
-                .forEach(
-                        taskStatus -> {
+                .forEach(this::scheduleTasks);
+    }
 
-                            if (taskStatus.getStatus() == Status.TODO){
-                                Task task = taskRetriever.findById(taskStatus.getTask().getId());
-                                taskUpdater.updateStatus(task, Status.DEFERRED);
-                                taskUpdater.updateAssignedDate(task, null);
-                                taskStatusUpdater.updateStatus(taskStatus, Status.DEFERRED);
-                            } else if (taskStatus.getStatus() == Status.IN_PROGRESS){
-                                taskStatusSaver.save(
-                                        TaskStatus.builder()
-                                                .task(taskStatus.getTask())
-                                                .status(Status.IN_PROGRESS)
-                                                .targetDate(LocalDate.now())
-                                                .build()
-                                );
-                            }
-                        }
-                );
+    @Async
+    @Transactional
+    public void scheduleTasks(TaskStatus taskStatus) {
+        if (taskStatus.getStatus() == Status.TODO){
+            Task task = taskRetriever.findById(taskStatus.getTask().getId());
+            taskUpdater.updateStatus(task, Status.DEFERRED);
+            taskUpdater.updateAssignedDate(task, null);
+            taskStatusUpdater.updateStatus(taskStatus, Status.DEFERRED);
+            taskStatusSaver.save(taskStatus);
+        } else if (taskStatus.getStatus() == Status.IN_PROGRESS){
+            taskStatusSaver.save(
+                    TaskStatus.builder()
+                            .task(taskStatus.getTask())
+                            .status(Status.IN_PROGRESS)
+                            .targetDate(LocalDate.now())
+                            .build()
+            );
+        }
     }
 }
