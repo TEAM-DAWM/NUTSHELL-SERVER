@@ -24,8 +24,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {  
             final AuthenticationException authException
     ) throws IOException {
         DefaultErrorCode errorCode = (DefaultErrorCode) request.getAttribute("exception");
-        if (errorCode == null)
+        if (errorCode == null) {
             errorCode = UnAuthorizedErrorCode.UNAUTHORIZED;
+            // 이 부분 수정 필요함
+        }
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(errorCode.getHttpStatus().value());

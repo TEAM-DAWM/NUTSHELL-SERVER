@@ -52,7 +52,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             final DefaultErrorCode errorCode,
             final Exception e
     ) throws ServletException, IOException {
-        log.error("FilterException throw {} Exception : {}", e.getClass().getSimpleName(), e.getMessage());
+        log.error(e.getMessage(), e);
         request.setAttribute("exception", errorCode);
         filterChain.doFilter(request, response);
     }
