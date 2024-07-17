@@ -2,7 +2,6 @@ package nutshell.server.advice;
 
 
 import feign.FeignException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.NotFoundException;
@@ -41,7 +40,7 @@ public class GlobalExceptionHandler {
 
     // 존재하지 않는 요청에 대한 예외
     @ExceptionHandler(value={NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<NotFoundErrorCode> handleNoPageFoundException(Exception e) {
+    public ResponseEntity<BusinessErrorCode> handleNoPageFoundException(Exception e) {
         log.error(e.getMessage(), e);
         return ResponseEntity
                 .status(BusinessErrorCode.WRONG_ENTRY_POINT.getHttpStatus())
