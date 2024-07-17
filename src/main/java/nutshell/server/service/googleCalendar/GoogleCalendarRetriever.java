@@ -19,6 +19,9 @@ public class GoogleCalendarRetriever {
                 () -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_GOOGLE_CALENDER)
         );
     }
+    public boolean existsByUserAndEmail(final User user, final String email) {
+        return googleCalendarRepository.existsByUserAndEmail(user, email);
+    }
 
     public List<GoogleCalendar> findAllByUser(final User user) {
         return googleCalendarRepository.findAllByUser(user);

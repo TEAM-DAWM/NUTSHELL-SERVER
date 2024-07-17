@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class GoogleCalendarSaver {
     private final GoogleCalendarRepository googleCalendarRepository;
+
     public GoogleCalendar save(final GoogleCalendar googleCalendar) {
         return googleCalendarRepository.save(googleCalendar);
     }

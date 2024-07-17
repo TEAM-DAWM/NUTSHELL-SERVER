@@ -16,6 +16,8 @@ import nutshell.server.domain.GoogleCalendar;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.*;
+import nutshell.server.exception.BusinessException;
+import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.feign.google.GoogleReissueRequest;
 import nutshell.server.feign.google.GoogleTokenResponse;
 import nutshell.server.feign.google.GoogleUserInfoResponse;
@@ -39,11 +41,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleCalendarService {
     private final UserRetriever userRetriever;
-    private final GoogleCalendarSaver googleCalendarSaver;
     private final GoogleCalendarRetriever googleCalendarRetriever;
     private final GoogleCalendarUpdater googleCalendarUpdater;
     private final GoogleCalendarRemover googleCalendarRemover;
     private final GoogleService googleService;
+    private final GoogleCalendarSaver googleCalendarSaver;
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final NetHttpTransport HTTP_TRANSPORT;
@@ -72,14 +74,17 @@ public class GoogleCalendarService {
         assert tokens != null;
         GoogleUserInfoResponse data = googleService.getUserInfo(tokens.accessToken());
         assert data != null;
-        GoogleCalendar googleCalendar = GoogleCalendar.builder()
-                .user(user)
-                .accessToken(tokens.accessToken())
-                .refreshToken(tokens.refreshToken())
-                .serialId(data.sub())
-                .email(data.email())
-                .build();
-        return googleCalendarSaver.save(googleCalendar);
+        if(googleCalendarRetriever.existsByUserAndEmail(user, data.email())){
+            throw new BusinessException(BusinessErrorCode.GOOGLE_SERVER_EXIST);
+        }
+        return googleCalendarSaver.save(
+                GoogleCalendar.builder()
+                        .user(user)
+                        .email(data.email())
+                        .accessToken(tokens.accessToken())
+                        .refreshToken(tokens.refreshToken())
+                        .build()
+        );
     }
 
     @Transactional
