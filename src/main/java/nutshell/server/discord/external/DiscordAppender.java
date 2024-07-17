@@ -80,11 +80,6 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                         StringEscapeUtils.escapeJson(mdcPropertyMap.get(MDCUtil.HEADER_MAP_MDC).replaceAll("[\\{\\{\\}]", "")),
                         true)
                 .addField(
-                        "[" + MDCUtil.USER_REQUEST_COOKIES + "]",
-                        StringEscapeUtils.escapeJson(
-                                mdcPropertyMap.get(MDCUtil.USER_REQUEST_COOKIES).replaceAll("[\\{\\{\\}]", "")),
-                        false)
-                .addField(
                         "[" + MDCUtil.PARAMETER_MAP_MDC + "]",
                         StringEscapeUtils.escapeJson(
                                 mdcPropertyMap.get(MDCUtil.PARAMETER_MAP_MDC).replaceAll("[\\{\\{\\}]", "")),
