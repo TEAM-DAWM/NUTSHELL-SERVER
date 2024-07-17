@@ -146,7 +146,7 @@ public class TimeBlockService {
                                 .timeBlocks(timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime))
                                 .build()
                 ).toList();
-        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalenders(userId, startDate, range, categoriesDto);
+        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalendars(userId, startDate, range, categoriesDto);
         return TimeBlocksWithGooglesDto.builder()
                 .tasks(tasks)
                 .googles(googles)

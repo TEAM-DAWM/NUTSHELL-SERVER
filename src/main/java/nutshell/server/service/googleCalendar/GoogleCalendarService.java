@@ -91,7 +91,7 @@ public class GoogleCalendarService {
     }
 
     @Transactional
-    public List<GoogleSchedulesDto> getGoogleCalenders(
+    public List<GoogleSchedulesDto> getGoogleCalendars(
             final Long userId,
             final LocalDate startDate,
             final Integer range,
