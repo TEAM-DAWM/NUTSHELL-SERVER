@@ -176,8 +176,8 @@ public class TaskService {
                 : TaskDetailDto.TimeBlock.builder().id(tb.getId()).startTime(tb.getStartTime()).endTime(tb.getEndTime()).build();
 
         TaskCreateDto.DeadLine deadLine = new TaskCreateDto.DeadLine(
-                task.getDeadLineDate() != null ? task.getDeadLineDate() : null,
-                task.getDeadLineTime() != null ? task.getDeadLineTime() : null
+                task.getDeadLineDate(),
+                task.getDeadLineTime()
         );
 
         if (targetDateDto == null) {

@@ -81,8 +81,10 @@ public class Task {
             this.name = name;
         if (description != null)
             this.description = description;
-        this.deadLineDate = deadLineDate;
-        this.deadLineTime = deadLineTime;
+        if(deadLineDate != null)
+            this.deadLineDate = deadLineDate;
+        if(deadLineTime != null)
+            this.deadLineTime = deadLineTime;
         this.updatedAt = LocalDateTime.now();
     }
 
