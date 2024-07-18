@@ -15,7 +15,7 @@ public record TaskCreateDto(
     public record DeadLine(
             @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
             LocalDate date,
-            @JsonFormat(pattern = "HH:mm:ss", timezone = "Asia/Seoul")
+            @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul")
             LocalTime time
     )
     { }
