@@ -6,7 +6,6 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
@@ -133,7 +132,7 @@ public class TimeBlockService {
             final Long userId,
             final LocalDate startDate,
             final Integer range,
-            final CategoriesDto categoriesDto
+            final List<String> categories
     ){
         LocalDateTime startTime = startDate.atStartOfDay();
         LocalDateTime endTime = startDate.plusDays(range-1).atTime(23,59,59);
@@ -146,7 +145,7 @@ public class TimeBlockService {
                                 .timeBlocks(timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime))
                                 .build()
                 ).toList();
-        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalendars(userId, startDate, range, categoriesDto);
+        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalendars(userId, startDate, range, categories);
         return TimeBlocksWithGooglesDto.builder()
                 .tasks(tasks)
                 .googles(googles)

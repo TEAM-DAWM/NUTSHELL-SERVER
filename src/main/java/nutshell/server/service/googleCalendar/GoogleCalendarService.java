@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import nutshell.server.constant.GoogleConstant;
 import nutshell.server.domain.GoogleCalendar;
 import nutshell.server.domain.User;
-import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.googleCalender.response.*;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
@@ -106,7 +105,7 @@ public class GoogleCalendarService {
             final Long userId,
             final LocalDate startDate,
             final Integer range,
-            final CategoriesDto categoriesDto
+            final List<String> categories
     ) {
         User user = userRetriever.findByUserId(userId);
         List<GoogleCalendar> googleCalendars = googleCalendarRetriever.findAllByUser(user);
@@ -114,11 +113,11 @@ public class GoogleCalendarService {
         googleCalendars.forEach(
                 googleCalender -> {
                     try {
-                        schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
+                        schedules.addAll(getEvents(googleCalender, startDate, range, categories));
                     } catch (Exception e) {
                         reissue(googleCalender);
                         try {
-                            schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
+                            schedules.addAll(getEvents(googleCalender, startDate, range, categories));
                         } catch (Exception ex) {
                             log.error("Google Calender Error : {}", ex.getMessage());
                         }
@@ -192,7 +191,7 @@ public class GoogleCalendarService {
             final GoogleCalendar googleCalendar,
             final LocalDate startDate,
             final Integer range,
-            final CategoriesDto categoriesDto
+            final List<String> categories
     ) throws IOException {
         List<GoogleSchedulesDto> schedules = new ArrayList<>();
         Calendar calender = getCalendar(googleCalendar);
@@ -200,7 +199,7 @@ public class GoogleCalendarService {
         List<CalendarListEntry> items =  calendarList.getItems();
         for (CalendarListEntry calendarListEntry : items) {
             String calendarId = calendarListEntry.getId();
-            if (categoriesDto != null && categoriesDto.categories() != null && !categoriesDto.categories().contains(calendarId)) {
+            if (categories != null && categories.contains(calendarId)) {
                 continue;
             }
             String calendars = calendarListEntry.getSummary();
