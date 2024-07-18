@@ -13,6 +13,7 @@ import nutshell.server.dto.task.response.TaskDetailDto;
 import nutshell.server.dto.task.response.TasksDto;
 import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.service.task.TaskService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,16 +55,17 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    // Task 상세조회 GET API
+    // Task 상세조회 GET API -> 수정완료
     @GetMapping("/tasks/{taskId}")
     public ResponseEntity<TaskDetailDto> getTask(
-        @UserId final Long userId,
-        @PathVariable final Long taskId,
-        @RequestBody(required = false) final TargetDateDto targetDateDto
+            @UserId final Long userId,
+            @PathVariable final Long taskId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate targetDate
     ){
+        TargetDateDto targetDateDto = (targetDate != null) ? new TargetDateDto(targetDate) : null;
         return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
-     }
-  
+    }
+
     @GetMapping("/tasks")
     public ResponseEntity<TasksDto> getTasks(
             @UserId final Long userId,
