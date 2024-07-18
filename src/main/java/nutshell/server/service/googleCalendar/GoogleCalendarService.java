@@ -81,7 +81,6 @@ public class GoogleCalendarService {
                 GoogleCalendar.builder()
                         .user(user)
                         .email(data.email())
-                        .serialId(data.sub())
                         .accessToken(tokens.accessToken())
                         .refreshToken(tokens.refreshToken())
                         .build()
@@ -92,7 +91,12 @@ public class GoogleCalendarService {
     public void unlink(final Long userId, final Long googleCalenderId){
         User user = userRetriever.findByUserId(userId);
         GoogleCalendar googleCalendar = googleCalendarRetriever.findByIdAndUser(googleCalenderId, user);
-        googleService.unlink(googleCalendar.getAccessToken());
+        try {
+            googleService.unlink(googleCalendar.getAccessToken());
+        } catch (Exception e) {
+            reissue(googleCalendar);
+            googleService.unlink(googleCalendar.getAccessToken());
+        }
         googleCalendarRemover.remove(googleCalendar);
     }
 
@@ -110,12 +114,12 @@ public class GoogleCalendarService {
                 googleCalender -> {
                     try {
                         schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         reissue(googleCalender);
                         try {
                             schedules.addAll(getEvents(googleCalender, startDate, range, categoriesDto));
-                        } catch (IOException ioException) {
-                            log.error("Google Calender Error : {}", ioException.getMessage());
+                        } catch (Exception ex) {
+                            log.error("Google Calender Error : {}", ex.getMessage());
                         }
                     }
                 }
@@ -134,12 +138,12 @@ public class GoogleCalendarService {
                         googleCalender -> {
                             try {
                                 categories.addAll(getCategories(googleCalender));
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 reissue(googleCalender);
                                 try {
                                     categories.addAll(getCategories(googleCalender));
-                                } catch (IOException ioException) {
-                                    log.error("Google Calender Error : {}", ioException.getMessage());
+                                } catch (Exception ex) {
+                                    log.error("Google Calender Error : {}", ex.getMessage());
                                 }
                             }
                         }
