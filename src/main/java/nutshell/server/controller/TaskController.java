@@ -26,6 +26,7 @@ import java.time.LocalDate;
 public class TaskController {
     private final TaskService taskService;
 
+    // task 상태 수정 PATCH API
     @PatchMapping("/tasks/{taskId}/status")
     public ResponseEntity<Void> updateStatus(
             @UserId final Long userId,
@@ -36,7 +37,7 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    // Staging Area 에 새로운 Task 생성하는 POST API
+    // Staging Area 에 새로운 Task 생성하는 POST API (데드라인 수정 완료)
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
             @UserId final Long userId,
@@ -45,7 +46,7 @@ public class TaskController {
         return ResponseEntity.created(URI.create(taskService.createTask(userId, taskCreateDto).getId().toString())).build();
     }
 
-    //Task 삭제 API
+    //Task 삭제 DELETE API
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(
             @UserId final Long userId,
@@ -55,7 +56,7 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    // Task 상세조회 GET API -> 수정완료
+    // Task 상세조회 GET API (데드라인 수정 완료)
     @GetMapping("/tasks/{taskId}")
     public ResponseEntity<TaskDetailDto> getTask(
             @UserId final Long userId,
@@ -66,6 +67,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTaskDetails(userId, taskId, targetDateDto));
     }
 
+   // Task 리스트 조회 (데드라인 수정 완료)
     @GetMapping("/tasks")
     public ResponseEntity<TasksDto> getTasks(
             @UserId final Long userId,
@@ -76,6 +78,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasks(userId, isTotal, order, targetDate));
     }
 
+   // Task 설명 수정 PATCH API (데드라인 수정 완료)
     @PatchMapping("/tasks/{taskId}")
     public ResponseEntity<Void> updateTask(
             @UserId final Long userId,
@@ -86,6 +89,7 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    // Task type별 리스트 조회 (데드라인 수정 완료)
     @GetMapping("/tasks/today")
     public ResponseEntity<TodoTaskDto> getTodayTasks(
             @UserId final Long userId,
@@ -93,7 +97,7 @@ public class TaskController {
     ){
         return ResponseEntity.ok(taskService.getTodayTasks(userId, type));
     }
-  
+
     @GetMapping("/tasks/period")
     public ResponseEntity<TaskDashboardDto> getDashBoard(
             @UserId final Long userId,
