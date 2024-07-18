@@ -144,22 +144,35 @@ public class TaskService {
         LocalDateTime deadLine = null;
         if (taskCreateDto.deadLine() != null) {
             LocalDate date = taskCreateDto.deadLine().date();
+            String timeStr = taskCreateDto.deadLine().time();
+            LocalTime time = null;
 
-            String[] timeParts = taskCreateDto.deadLine().time().split(":");
-            int hour = Integer.parseInt(timeParts[0]);
-            int minute = Integer.parseInt(timeParts[1]);
-            LocalTime time = LocalTime.of(hour, minute);
+            if (timeStr != null && !timeStr.isEmpty()) {
+                String[] timeParts = timeStr.split(":");
+                int hour = Integer.parseInt(timeParts[0]);
+                int minute = Integer.parseInt(timeParts[1]);
+                time = LocalTime.of(hour, minute);
+            }
 
-            deadLine = LocalDateTime.of(date, time);
+            if (date != null && time != null) {
+                deadLine = LocalDateTime.of(date, time);
+            } else if (date != null) {
+                deadLine = date.atStartOfDay();
+            } else if (time != null) {
+                deadLine = LocalDateTime.of(LocalDate.now(), time);
+            }
         }
 
         Task task = Task.builder()
                 .user(user)
                 .name(taskCreateDto.name())
-                .deadLine(deadLine)
+                .deadLine(deadLine) // deadLine이 null일 수 있습니다.
                 .build();
+
         return taskSaver.save(task);
     }
+
+
 
     public void removeTask(final Long userId, final Long taskId) {
         User user = userRetriever.findByUserId(userId);
