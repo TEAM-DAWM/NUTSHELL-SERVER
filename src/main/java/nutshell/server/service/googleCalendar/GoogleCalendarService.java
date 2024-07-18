@@ -81,6 +81,7 @@ public class GoogleCalendarService {
                 GoogleCalendar.builder()
                         .user(user)
                         .email(data.email())
+                        .serialId(data.sub())
                         .accessToken(tokens.accessToken())
                         .refreshToken(tokens.refreshToken())
                         .build()
