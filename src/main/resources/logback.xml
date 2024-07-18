@@ -1,38 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 로그 패턴 설정 -->
     <property name="LOG_PATTERN"
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
-
-    <!-- Spring 프로퍼티 설정 -->
     <springProperty name="DISCORD_WEBHOOK_URI" source="logging.discord.webhook-uri"/>
-
-    <!-- 외부 appender 설정 파일 포함 -->
     <include resource="console-appender.xml"/>
     <include resource="discord-appender.xml"/>
-
-    <!-- 파일 로그 설정 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/my_app.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <!-- 롤오버되는 파일 이름 패턴 설정 -->
-            <fileNamePattern>logs/my_app.%i.log</fileNamePattern>
-            <!-- 최대 보관할 파일 수 설정 -->
-            <maxIndex>30</maxIndex>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <!-- 10MB를 초과하면 롤오버 -->
-            <maxFileSize>10MB</maxFileSize>
-        </triggeringPolicy>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
-    <!-- 루트 로거 설정 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
         <appender-ref ref="ASYNC_DISCORD" />
     </root>
 </configuration>
