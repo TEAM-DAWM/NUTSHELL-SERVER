@@ -6,9 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nutshell.server.dto.type.Status;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -28,8 +30,12 @@ public class Task {
     @Column(name = "priority")
     private String priority;
 
-    @Column(name = "dead_line")
-    private LocalDateTime deadLine;
+    // deadLine 을 date와 time 두개로 쪼갬
+    @Column(name = "dead_line_date")
+    private LocalDate deadLineDate;
+
+    @Column(name = "dead_line_time")
+    private LocalTime deadLineTime;
 
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
@@ -58,23 +64,27 @@ public class Task {
     private List<TaskStatus> taskStatuses;
 
     @Builder
-    public Task(User user, String name, String description, LocalDateTime deadLine) {
+    public Task(User user, String name, String description, LocalDate deadLineDate, LocalTime deadLineTime) {
         this.user = user;
         this.name = name;
         this.description = description;
-        this.deadLine = deadLine;
+        this.deadLineDate = deadLineDate;
+        this.deadLineTime = deadLineTime;
         this.status = Status.TODO;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateTask(String name, String description, LocalDateTime deadLine) {
+
+    public void updateTask(String name, String description, LocalDate deadLineDate, LocalTime deadLineTime) {
         if (name != null)
             this.name = name;
         if (description != null)
             this.description = description;
-        if (deadLine != null)
-            this.deadLine = deadLine;
+        if(deadLineDate != null)
+            this.deadLineDate = deadLineDate;
+        if(deadLineTime != null)
+            this.deadLineTime = deadLineTime;
         this.updatedAt = LocalDateTime.now();
     }
 

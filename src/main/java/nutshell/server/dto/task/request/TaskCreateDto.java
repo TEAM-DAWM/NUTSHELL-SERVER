@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public record TaskCreateDto(
         @NotNull
@@ -14,7 +15,8 @@ public record TaskCreateDto(
     public record DeadLine(
             @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
             LocalDate date,
-            String time)
-    {
-    }
+            @JsonFormat(pattern = "HH:mm", timezone = "Asia/Seoul")
+            LocalTime time
+    )
+    { }
 }
