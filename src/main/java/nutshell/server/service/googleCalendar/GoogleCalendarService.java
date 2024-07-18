@@ -128,14 +128,15 @@ public class GoogleCalendarService {
         return schedules;
     }
 
-    public GoogleCategoriesDto getCategories(
+    public GoogleEmailsDto getCategories(
             Long userId
     ) {
         User user = userRetriever.findByUserId(userId);
-        List<GoogleCategoriesDto.GoogleCategoryDto> categories = new ArrayList<>();
+        List<GoogleEmailsDto.GoogleEmailDto> emails = new ArrayList<>();
         googleCalendarRetriever.findAllByUser(user)
                 .forEach(
                         googleCalender -> {
+                            List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> categories = new ArrayList<>();
                             try {
                                 categories.addAll(getCategories(googleCalender));
                             } catch (Exception e) {
@@ -146,10 +147,14 @@ public class GoogleCalendarService {
                                     log.error("Google Calender Error : {}", ex.getMessage());
                                 }
                             }
+                            emails.add(GoogleEmailsDto.GoogleEmailDto.builder()
+                                    .email(googleCalender.getEmail())
+                                    .categories(categories)
+                                    .build());
                         }
                 );
-        return GoogleCategoriesDto.builder()
-                .categories(categories)
+        return GoogleEmailsDto.builder()
+                .emails(emails)
                 .build();
     }
 
@@ -166,18 +171,18 @@ public class GoogleCalendarService {
                 .build();
     }
 
-    private List<GoogleCategoriesDto.GoogleCategoryDto> getCategories(
+    private List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> getCategories(
             final GoogleCalendar googleCalendar
     ) throws IOException {
         Calendar calender = getCalendar(googleCalendar);
         CalendarList calendarList = calender.calendarList().list().execute();
         List<CalendarListEntry> items =  calendarList.getItems();
-        List<GoogleCategoriesDto.GoogleCategoryDto> categories = new ArrayList<>();
+        List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> categories = new ArrayList<>();
         for (CalendarListEntry calendarListEntry : items) {
             String calendarId = calendarListEntry.getId();
             String calendars = calendarListEntry.getSummary();
             String color = calendarListEntry.getBackgroundColor();
-            categories.add(GoogleCategoriesDto.GoogleCategoryDto.builder()
+            categories.add(GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto.builder()
                     .id(calendarId)
                     .name(calendars)
                     .color(color)

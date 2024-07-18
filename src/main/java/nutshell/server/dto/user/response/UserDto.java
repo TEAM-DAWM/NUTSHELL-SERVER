@@ -1,7 +1,7 @@
 package nutshell.server.dto.user.response;
 
 import lombok.Builder;
-import nutshell.server.dto.googleCalender.response.GoogleEmailDto;
+import nutshell.server.dto.googleCalender.response.UserEmailDto;
 
 import java.util.List;
 
@@ -11,6 +11,6 @@ public record UserDto(
     String familyName,
     String image,
     String email,
-    List<GoogleEmailDto> googleCalenders
+    List<UserEmailDto> googleCalenders
 ) {
 }
