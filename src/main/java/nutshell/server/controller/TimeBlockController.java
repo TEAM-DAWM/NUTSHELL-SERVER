@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.googleCalender.request.CategoriesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.service.timeBlock.TimeBlockService;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -56,8 +56,8 @@ public class TimeBlockController {
             @UserId final Long userId,
             @RequestParam @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate startDate,
             @RequestParam final Integer range,
-            @RequestBody(required = false) final CategoriesDto categoriesDto
+            @RequestParam(required = false) final List<String> categories
     ) {
-        return ResponseEntity.ok(timeBlockService.getTimeBlocksWithGoogle(userId, startDate, range, categoriesDto));
+        return ResponseEntity.ok(timeBlockService.getTimeBlocksWithGoogle(userId, startDate, range, categories));
     }
 }
