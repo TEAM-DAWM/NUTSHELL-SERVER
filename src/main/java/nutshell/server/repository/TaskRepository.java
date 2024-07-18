@@ -26,7 +26,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.assigned_date is null " +
-                    "order by abs(extract(epoch from now() - t.dead_line)) asc nulls last"
+                    "order by abs(current_date - t.dead_line_date) asc nulls last, " +
+                    "abs(extract(epoch from current_time - t.dead_line_time)) asc nulls last"
             , nativeQuery = true
     )
     List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffAsc(final Long userId);
@@ -34,7 +35,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.assigned_date is null " +
-                    "order by abs(extract(epoch from now() - t.dead_line)) desc nulls last"
+                    "order by abs(current_date - t.dead_line_date) desc nulls last, " +
+                    "abs(extract(epoch from current_time - t.dead_line_time)) desc nulls last"
             , nativeQuery = true
     )
     List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(final Long userId);
@@ -42,8 +44,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.assigned_date is null " +
-                    "AND t.dead_line <= now() + interval '2 days' " +
-                    "order by t.dead_line asc nulls last"
+                    "AND t.dead_line_date <= current_date + interval '2 days' " +
+                    "order by t.dead_line_date asc nulls last, t.dead_line_time asc nulls last"
             ,nativeQuery = true
     )
     List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId);
@@ -51,7 +53,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.status = 'DEFERRED' AND t.assigned_date is null " +
-                    "order by t.dead_line nulls last"
+                    "order by t.dead_line_date nulls last, t.dead_line_time nulls last"
             ,nativeQuery = true
     )
     List<Task> findAllDeferredTasksByUserWithStatus(final Long userId);
