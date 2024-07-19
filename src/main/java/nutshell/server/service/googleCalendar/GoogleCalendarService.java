@@ -18,7 +18,6 @@ import nutshell.server.service.googleSchedule.GoogleScheduleRetriever;
 import nutshell.server.service.googleSchedule.GoogleScheduleService;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,7 +88,6 @@ public class GoogleCalendarService {
         googleCalendarRemover.remove(googleCalendar);
     }
 
-    @Async
     public void getSyncs(final Long userId) {
         User user = userRetriever.findByUserId(userId);
         googleCalendarRetriever.findAllByUser(user)
