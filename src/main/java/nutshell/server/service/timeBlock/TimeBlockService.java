@@ -50,6 +50,9 @@ public class TimeBlockService {
         if (timeBlockRequestDto.startTime().isAfter(timeBlockRequestDto.endTime())) {
             throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
         }
+        if (!timeBlockRequestDto.startTime().toLocalDate().isEqual(timeBlockRequestDto.endTime().toLocalDate())) {
+            throw new BusinessException(BusinessErrorCode.NOT_SAME_DATE_CONFLICT);
+        }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         //시작시간과 끝나는 시간 사이에 다른 타임블록이 있다면
@@ -100,6 +103,9 @@ public class TimeBlockService {
         //시작시간이 끝나는 시간보다 늦다면
         if (timeBlockRequestDto.startTime().isAfter(timeBlockRequestDto.endTime())) {
             throw new BusinessException(BusinessErrorCode.TIME_CONFLICT);
+        }
+        if (!timeBlockRequestDto.startTime().toLocalDate().isEqual(timeBlockRequestDto.endTime().toLocalDate())) {
+            throw new BusinessException(BusinessErrorCode.NOT_SAME_DATE_CONFLICT);
         }
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
