@@ -1,18 +1,10 @@
 package nutshell.server.service.googleCalendar;
 
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.constant.GoogleConstant;
 import nutshell.server.domain.GoogleCalendar;
+import nutshell.server.domain.GoogleSchedule;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.response.*;
 import nutshell.server.exception.BusinessException;
@@ -21,17 +13,15 @@ import nutshell.server.feign.google.GoogleReissueRequest;
 import nutshell.server.feign.google.GoogleTokenResponse;
 import nutshell.server.feign.google.GoogleUserInfoResponse;
 import nutshell.server.service.google.GoogleService;
+import nutshell.server.service.googleCategory.GoogleCategoryRetriever;
+import nutshell.server.service.googleSchedule.GoogleScheduleRetriever;
+import nutshell.server.service.googleSchedule.GoogleScheduleService;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,22 +35,16 @@ public class GoogleCalendarService {
     private final GoogleCalendarRemover googleCalendarRemover;
     private final GoogleService googleService;
     private final GoogleCalendarSaver googleCalendarSaver;
-
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final NetHttpTransport HTTP_TRANSPORT;
+    private final GoogleScheduleRetriever googleScheduleRetriever;
+    private final GoogleCategoryRetriever googleCategoryRetriever;
+    private final GoogleScheduleService googleScheduleService;
     @Value("${google.calender.client-id}")
     private String CLIENT_ID;
     @Value("${google.calender.client-secret}")
     private String CLIENT_SECRET;
     @Value("${google.calender.redirect-uri}")
     private String REDIRECT_URI;
-    static {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
     @Transactional
     public GoogleCalendar register(final String code, final Long userId) {
         User user = userRetriever.findByUserId(userId);
@@ -99,6 +83,24 @@ public class GoogleCalendarService {
         }
         googleCalendarRemover.remove(googleCalendar);
     }
+    public void getSyncs(final Long userId) {
+        User user = userRetriever.findByUserId(userId);
+        googleCalendarRetriever.findAllByUser(user)
+                .forEach(
+                        googleCalendar -> {
+                            try {
+                                googleScheduleService.syncCalendar(googleCalendar);
+                            } catch (Exception e) {
+                                reissue(googleCalendar);
+                                try {
+                                    googleScheduleService.syncCalendar(googleCalendar);
+                                } catch (Exception ex) {
+                                    log.error("Google Calender Error : {}", ex.getMessage());
+                                }
+                            }
+                        }
+                );
+    }
 
     @Transactional
     public List<GoogleSchedulesDto> getGoogleCalendars(
@@ -109,44 +111,29 @@ public class GoogleCalendarService {
     ) {
         User user = userRetriever.findByUserId(userId);
         List<GoogleCalendar> googleCalendars = googleCalendarRetriever.findAllByUser(user);
-        List<GoogleSchedulesDto> schedules = new ArrayList<>();
+        List<GoogleSchedule> schedules = new ArrayList<>();
         googleCalendars.forEach(
-                googleCalender -> {
-                    try {
-                        schedules.addAll(getEvents(googleCalender, startDate, range, categories));
-                    } catch (Exception e) {
-                        reissue(googleCalender);
-                        try {
-                            schedules.addAll(getEvents(googleCalender, startDate, range, categories));
-                        } catch (Exception ex) {
-                            log.error("Google Calender Error : {}", ex.getMessage());
-                        }
-                    }
-                }
+                googleCalender -> schedules.addAll(getEvents(googleCalender, startDate, range, categories))
         );
-
-        return schedules;
+        return schedules.stream().map(
+                googleSchedule -> GoogleSchedulesDto.builder()
+                        .id(googleSchedule.getId().split(":")[1])
+                        .name(googleSchedule.getName())
+                        .color(googleSchedule.getColor())
+                        .schedules(googleSchedule.getSchedules())
+                        .build()
+        ).toList();
     }
 
     public GoogleEmailsDto getCategories(
-            Long userId
+            final Long userId
     ) {
         User user = userRetriever.findByUserId(userId);
         List<GoogleEmailsDto.GoogleEmailDto> emails = new ArrayList<>();
         googleCalendarRetriever.findAllByUser(user)
                 .forEach(
                         googleCalender -> {
-                            List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> categories = new ArrayList<>();
-                            try {
-                                categories.addAll(getCategories(googleCalender));
-                            } catch (Exception e) {
-                                reissue(googleCalender);
-                                try {
-                                    categories.addAll(getCategories(googleCalender));
-                                } catch (Exception ex) {
-                                    log.error("Google Calender Error : {}", ex.getMessage());
-                                }
-                            }
+                            List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> categories = getCategories(googleCalender);
                             emails.add(GoogleEmailsDto.GoogleEmailDto.builder()
                                     .email(googleCalender.getEmail())
                                     .categories(categories)
@@ -158,83 +145,57 @@ public class GoogleCalendarService {
                 .build();
     }
 
-    private Calendar getCalendar(
-            final GoogleCalendar googleCalendar
-    ) {
-        Credential credential = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
-                .setJsonFactory(JSON_FACTORY)
-                .setTransport(HTTP_TRANSPORT)
-                .build()
-                .setAccessToken(googleCalendar.getAccessToken());
-        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(GoogleConstant.APPLICATION_NAME)
-                .build();
-    }
-
     private List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> getCategories(
             final GoogleCalendar googleCalendar
-    ) throws IOException {
-        Calendar calender = getCalendar(googleCalendar);
-        CalendarList calendarList = calender.calendarList().list().execute();
-        List<CalendarListEntry> items =  calendarList.getItems();
-        List<GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto> categories = new ArrayList<>();
-        for (CalendarListEntry calendarListEntry : items) {
-            String calendarId = calendarListEntry.getId();
-            String calendars = calendarListEntry.getSummary();
-            String color = calendarListEntry.getBackgroundColor();
-            categories.add(GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto.builder()
-                    .id(calendarId)
-                    .name(calendars)
-                    .color(color)
-                    .build()
-            );
-        }
-        return categories;
+    ) {
+        return googleCategoryRetriever
+                .findAllByGoogleCalendarId(googleCalendar.getId()).stream().map(
+                googleCategory -> GoogleEmailsDto.GoogleEmailDto.GoogleCategoryDto.builder()
+                        .id(googleCategory.getId().split(":")[1])
+                        .name(googleCategory.getName())
+                        .color(googleCategory.getColor())
+                        .build()
+        ).toList();
     }
 
-    private List<GoogleSchedulesDto> getEvents(
+    private List<GoogleSchedule> getEvents(
             final GoogleCalendar googleCalendar,
             final LocalDate startDate,
             final Integer range,
             final List<String> categories
-    ) throws IOException {
-        List<GoogleSchedulesDto> schedules = new ArrayList<>();
-        Calendar calender = getCalendar(googleCalendar);
-        CalendarList calendarList = calender.calendarList().list().execute();
-        List<CalendarListEntry> items =  calendarList.getItems();
-        for (CalendarListEntry calendarListEntry : items) {
-            String calendarId = calendarListEntry.getId();
-            if (categories != null && categories.contains(calendarId)) {
-                continue;
-            }
-            String calendars = calendarListEntry.getSummary();
-            String color = calendarListEntry.getBackgroundColor();
-            DateTime startTime = new DateTime(startDate.atStartOfDay() + ":00Z");
-            DateTime endTime = new DateTime(startDate.plusDays(range - 1).atTime(23, 59) + ":00Z");
-            Events events = calender.events().list(calendarId).setTimeMin(startTime).setTimeMax(endTime).execute();
-            List<GoogleSchedulesDto.GoogleScheduleDto> googleScheduleDtoList = new ArrayList<>();
-            for (Event event : events.getItems()) {
-                LocalDateTime start = getLocalDateTime(event.getStart());
-                LocalDateTime end = getLocalDateTime(event.getEnd());
-                GoogleSchedulesDto.GoogleScheduleDto googleScheduleDto = GoogleSchedulesDto.GoogleScheduleDto.builder()
-                        .name(event.getSummary())
-                        .startTime(start)
-                        .endTime(end)
-                        .allDay(!start.toLocalDate().equals(end.toLocalDate()))
-                        .build();
-                googleScheduleDtoList.add(googleScheduleDto);
-            }
-            if (googleScheduleDtoList.isEmpty()) {
-                continue;
-            }
-            schedules.add(GoogleSchedulesDto.builder()
-                    .id(calendarId)
-                    .name(calendars)
-                    .color(color)
-                    .schedules(googleScheduleDtoList)
-                    .build()
+    ) {
+        List<GoogleSchedule> googleSchedules = new ArrayList<>();
+        if (categories != null && !categories.isEmpty()) {
+            categories.forEach(
+                    category -> {
+                        GoogleSchedule schedule = googleScheduleRetriever.findById(googleCalendar.getId(), category);
+                        if (schedule != null)
+                            googleSchedules.add(schedule);
+                    }
             );
+        } else {
+            googleSchedules.addAll(googleScheduleRetriever.findAllByGoogleCalendarId(googleCalendar.getId()));
         }
+        List<GoogleSchedule> schedules = new ArrayList<>();
+        googleSchedules.forEach(
+                googleSchedule -> {
+                    List<GoogleSchedulesDto.GoogleScheduleDto> googleSchedulesDto = googleSchedule.getSchedules().stream().filter(
+                            googleScheduleDto -> googleScheduleDto.startTime().toLocalDate().isAfter(startDate.minusDays(1))
+                                    && googleScheduleDto.startTime().toLocalDate().isBefore(startDate.plusDays(range))
+                    ).toList();
+                    if (!googleSchedulesDto.isEmpty()) {
+                        schedules.add(
+                                GoogleSchedule.builder()
+                                        .id(googleSchedule.getId())
+                                        .name(googleSchedule.getName())
+                                        .color(googleSchedule.getColor())
+                                        .googleCalendarId(googleSchedule.getGoogleCalendarId())
+                                        .googleCategoryId(googleSchedule.getGoogleCategoryId())
+                                        .schedules(googleSchedulesDto)
+                                        .build());
+                    }
+                }
+        );
         return schedules;
     }
 
@@ -251,25 +212,5 @@ public class GoogleCalendarService {
         assert tokens != null;
         log.info("{}", tokens.accessToken());
         googleCalendarUpdater.updateTokens(googleCalendar, tokens.accessToken());
-    }
-
-    private LocalDateTime getLocalDateTime(final EventDateTime event) {
-        LocalDateTime time = null;
-        if (event != null) {
-            if (event.getDateTime() != null) {
-                // dateTime 값이 있는 경우
-                time = LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(event.getDateTime().getValue()),
-                        ZoneId.of("Asia/Seoul")
-                ).plusMinutes(event.getDateTime().getTimeZoneShift());
-            } else if (event.getDate() != null) {
-                // date 값만 있는 경우
-                time = LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(event.getDate().getValue()),
-                        ZoneId.of("Asia/Seoul")
-                ).plusMinutes(event.getDate().getTimeZoneShift());
-            }
-        }
-        return time;
     }
 }
