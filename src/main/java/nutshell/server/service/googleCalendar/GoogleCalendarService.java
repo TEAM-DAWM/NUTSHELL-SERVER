@@ -80,7 +80,11 @@ public class GoogleCalendarService {
             googleService.unlink(googleCalendar.getAccessToken());
         } catch (Exception e) {
             reissue(googleCalendar);
-            googleService.unlink(googleCalendar.getAccessToken());
+            try {
+                googleService.unlink(googleCalendar.getAccessToken());
+            } catch (Exception ex) {
+                log.error("Google Calender Error : {}", ex.getMessage());
+            }
         }
         googleCalendarRemover.remove(googleCalendar);
     }
@@ -203,17 +207,20 @@ public class GoogleCalendarService {
     }
 
     private void reissue(final GoogleCalendar googleCalendar) {
-        GoogleTokenResponse tokens = googleService.reissue(
-                GoogleReissueRequest.builder()
-                        .clientId(CLIENT_ID)
-                        .clientSecret(CLIENT_SECRET)
-                        .redirectUri(REDIRECT_URI)
-                        .refreshToken(googleCalendar.getRefreshToken())
-                        .grantType(GoogleConstant.REFRESH_TOKEN)
-                        .build()
-        );
-        assert tokens != null;
-        log.info("{}", tokens.accessToken());
-        googleCalendarUpdater.updateTokens(googleCalendar, tokens.accessToken());
+        try {
+            GoogleTokenResponse tokens = googleService.reissue(
+                    GoogleReissueRequest.builder()
+                            .clientId(CLIENT_ID)
+                            .clientSecret(CLIENT_SECRET)
+                            .redirectUri(REDIRECT_URI)
+                            .refreshToken(googleCalendar.getRefreshToken())
+                            .grantType(GoogleConstant.REFRESH_TOKEN)
+                            .build()
+            );
+            assert tokens != null;
+            googleCalendarUpdater.updateTokens(googleCalendar, tokens.accessToken());
+        } catch(Exception e){
+            log.error("Google Calender Error : {}", e.getMessage());
+        }
     }
 }
