@@ -8,6 +8,7 @@ import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
 import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
+import nutshell.server.dto.timeBlock.response.TimeBlockDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.dto.type.Status;
@@ -150,7 +151,18 @@ public class TimeBlockService {
                         task -> TimeBlocksDto.builder()
                                 .id(task.getId())
                                 .name(task.getName())
-                                .timeBlocks(timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime))
+                                .timeBlocks(
+                                        timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime)
+                                                .stream().map(
+                                                        timeBlock -> TimeBlockDto.builder()
+                                                                .id(timeBlock.getId())
+                                                                .startTime(timeBlock.getStartTime())
+                                                                .endTime(timeBlock.getEndTime())
+                                                                .allDay(timeBlock.getStartTime().isEqual(timeBlock.getEndTime()))
+                                                                .build()
+                                                ).toList(
+                                                )
+                                )
                                 .build()
                 ).toList();
         List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalendars(userId, startDate, range, categories);

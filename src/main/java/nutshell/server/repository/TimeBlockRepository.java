@@ -4,7 +4,6 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.timeBlock.response.TimeBlockDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -49,12 +48,12 @@ public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
     );
 
 
-    @Query("SELECT new nutshell.server.dto.timeBlock.response.TimeBlockDto(t.id, t.startTime, t.endTime) " +
+    @Query("SELECT t " +
             "FROM TimeBlock t " +
             "WHERE t.taskStatus.task = :task " +
             "AND t.startTime between :startTime and :endTime " +
             "AND t.endTime between :startTime and :endTime")
-    List<TimeBlockDto> findAllByTaskIdAndTimeRange(
+    List<TimeBlock> findAllByTaskIdAndTimeRange(
             final Task task,
             final LocalDateTime startTime,
             final LocalDateTime endTime

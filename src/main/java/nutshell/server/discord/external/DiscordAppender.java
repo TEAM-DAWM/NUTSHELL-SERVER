@@ -11,7 +11,6 @@ import nutshell.server.discord.exception.ErrorLogAppenderException;
 import nutshell.server.discord.util.MDCUtil;
 import nutshell.server.discord.model.EmbedObject;
 import nutshell.server.discord.util.StringUtil;
-import nutshell.server.exception.code.InternalServerErrorCode;
 
 import java.awt.*;
 import java.io.IOException;
@@ -73,6 +72,10 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
                 .addField(
                         "[" + MDCUtil.USER_IP_MDC + "]",
                         StringEscapeUtils.escapeJson(mdcPropertyMap.get(MDCUtil.USER_IP_MDC)),
+                        false)
+                .addField(
+                        "[" + MDCUtil.USER_INFO + "]",
+                        StringEscapeUtils.escapeJson(mdcPropertyMap.get(MDCUtil.USER_INFO)),
                         false)
                 .addField(
                         "[" + MDCUtil.HEADER_MAP_MDC + "]",

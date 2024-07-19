@@ -12,15 +12,12 @@ public class MDCUtil {
 
     public static final String REQUEST_URI_MDC = "이용자 요청 URI 정보";
     public static final String USER_IP_MDC = "이용자 IP 정보";
+    public static final String USER_INFO = "이용자 ID 정보";
     public static final String HEADER_MAP_MDC = "HTTP 헤더 정보";
     public static final String PARAMETER_MAP_MDC = "Parameter 정보";
     public static final String BODY_MDC = "HTTP Body 정보";
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final MDCAdapter mdc = MDC.getMDCAdapter();
-
-    public static void set(String key, String value) {
-        mdc.put(key, value);
-    }
 
     public static void setJsonValue(String key, Object value) throws JsonProcessingException {
         try {
@@ -34,9 +31,5 @@ public class MDCUtil {
         } catch (JsonProcessingException ex) {
             throw ex;
         }
-    }
-
-    public static void clear() {
-        MDC.clear();
     }
 }
