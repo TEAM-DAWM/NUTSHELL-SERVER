@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String token = getJwtFromRequest(request);    //헤더에서 토큰 찾기
         if (StringUtils.hasText(token)) {   //토큰 있으면 토큰으로부터 유저 정보 가져와서 인증 객체 생성
+            log.info("====================token: {}", token);
             Claims claims = jwtUtil.getTokenBody(token);
             Long userId = claims.get(AuthConstant.USER_ID_CLAIM_NAME, Long.class);
             UserAuthentication authentication = UserAuthentication.createUserAuthentication(userId);
