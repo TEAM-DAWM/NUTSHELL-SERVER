@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nutshell.server.dto.type.Status;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,9 +76,9 @@ public class Task {
 
 
     public void updateTask(String name, String description, LocalDate deadLineDate, LocalTime deadLineTime) {
-        if (name != null)
+        if (name != null && !name.equals(""))
             this.name = name;
-        if (description != null)
+        if (description != null && !description.equals(""))
             this.description = description;
         if(deadLineDate != null)
             this.deadLineDate = deadLineDate;

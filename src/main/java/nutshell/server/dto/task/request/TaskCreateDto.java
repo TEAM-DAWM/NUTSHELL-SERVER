@@ -1,15 +1,15 @@
 package nutshell.server.dto.task.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record TaskCreateDto(
-        @NotNull
+        @NotBlank
         String name,
-       DeadLine deadLine
+        DeadLine deadLine
 
 ) {
     public record DeadLine(
