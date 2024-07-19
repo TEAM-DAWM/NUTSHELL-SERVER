@@ -19,6 +19,7 @@ public enum BusinessErrorCode implements DefaultErrorCode{
     BUSINESS_PERIOD(HttpStatus.OK,"conflict","올바른 기간을 설정해 주세요."),
     GOOGLE_SERVER_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "external", "구글 서버 내부 오류입니다."),
     GOOGLE_SERVER_EXIST(HttpStatus.OK, "conflict", "이미 연동한 구글 계정입니다."),
+    NOT_SAME_UPDATE_DATE(HttpStatus.OK, "conflict", "같은 날에만 수정할 수 있습니다."),
     ;
     @JsonIgnore
     private final HttpStatus httpStatus;

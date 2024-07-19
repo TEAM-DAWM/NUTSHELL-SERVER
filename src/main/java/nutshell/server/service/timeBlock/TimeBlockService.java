@@ -110,6 +110,8 @@ public class TimeBlockService {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         TimeBlock timeBlock = timeBlockRetriever.findByTaskAndId(task, timeBlockId);
+        if (!timeBlock.getStartTime().toLocalDate().isEqual(timeBlockRequestDto.startTime().toLocalDate()))
+            throw new BusinessException(BusinessErrorCode.NOT_SAME_UPDATE_DATE);
         //자기자신을 제외한 다른 타임블록 중 시작시간과 끝나는 시간 사이에 다른 타임블록이 있다면
         if (timeBlockRetriever.existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
                 user,
