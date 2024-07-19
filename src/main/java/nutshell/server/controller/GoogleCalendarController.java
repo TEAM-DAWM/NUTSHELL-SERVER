@@ -40,4 +40,12 @@ public class GoogleCalendarController {
     ) {
         return ResponseEntity.ok(googleCalendarService.getCategories(userId));
     }
+
+    @PostMapping("/google/calendars/sync")
+    public ResponseEntity<Void> getSyncs(
+            @UserId final Long userId
+    ) {
+        googleCalendarService.getSyncs(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

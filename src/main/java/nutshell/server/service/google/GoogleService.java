@@ -41,7 +41,7 @@ public class GoogleService {
         googleUnlinkClient.googleUnlink(token);
     }
 
-    public GoogleTokenResponse reissue(final GoogleReissueRequest request) {
+    public GoogleTokenResponse reissue(final GoogleReissueRequest request) throws Exception {
         return googleReissueClient.googleReissue(request);
     }
 }
