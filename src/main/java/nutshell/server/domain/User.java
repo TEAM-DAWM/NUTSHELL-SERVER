@@ -46,7 +46,6 @@ public class User {
     private List<GoogleCalendar> googleCalendars;
 
     @Builder
-
     public User(String givenName, String familyName, String image, String email, String serialId) {
         this.givenName = givenName;
         this.familyName = familyName;
@@ -54,6 +53,12 @@ public class User {
         this.email = email;
         this.serialId = serialId;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateName(String givenName, String familyName) {
+        this.givenName = givenName;
+        this.familyName = familyName;
         this.updatedAt = LocalDateTime.now();
     }
 }

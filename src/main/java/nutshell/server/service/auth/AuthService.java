@@ -12,6 +12,7 @@ import nutshell.server.service.token.TokenRemover;
 import nutshell.server.service.token.TokenRetriever;
 import nutshell.server.service.token.TokenSaver;
 import nutshell.server.service.user.UserRetriever;
+import nutshell.server.service.user.UserUpdater;
 import nutshell.server.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final TokenRetriever tokenRetriever;
     private final UserRetriever userRetriever;
+    private final UserUpdater userUpdater;
     private final TokenSaver tokenSaver;
     private final TokenRemover tokenRemover;
     private final GoogleService googleService;
@@ -64,6 +66,9 @@ public class AuthService {
                 googleUserInfoResponse.picture(),
                 googleUserInfoResponse.email()
         );
+        if (user.getFamilyName() == null && user.getGivenName() == null){
+            userUpdater.updateName(user, googleUserInfoResponse.givenName(), googleUserInfoResponse.familyName());
+        }
         JwtTokensDto jwtTokensDto = jwtUtil.generateTokens(user.getId());
         tokenSaver.save(Token.builder().id(user.getId()).refreshToken(jwtTokensDto.refreshToken()).build());
         return jwtTokensDto;
