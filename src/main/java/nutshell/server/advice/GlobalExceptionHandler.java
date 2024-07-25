@@ -4,6 +4,7 @@ package nutshell.server.advice;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.exception.BusinessException;
+import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.NotFoundException;
 import nutshell.server.exception.UnAuthorizedException;
 import nutshell.server.exception.code.*;
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
     // 요청은 정상이나 비즈니스 중 실패가 있는 경우
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BusinessErrorCode> handleBusinessException(BusinessException e) {
-        log.error( e.getErrorCode().getMessage(), e);
+        log.info(e.getErrorCode().getMessage(), e);
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode());
@@ -65,6 +66,7 @@ public class GlobalExceptionHandler {
                 .body(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
     }
 
+    // 필수 파라미터가 누락된 경우
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<IllegalArgumentErrorCode> handleException(MissingServletRequestParameterException e) {
         log.error(e.getMessage(), e);
@@ -97,5 +99,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(BusinessErrorCode.GOOGLE_SERVER_ERROR.getHttpStatus())
                 .body(BusinessErrorCode.GOOGLE_SERVER_ERROR);
+    }
+
+    //잘못된 인자 오
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<IllegalArgumentErrorCode> handleException(IllegalArgumentException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(e.getErrorCode());
     }
 }
