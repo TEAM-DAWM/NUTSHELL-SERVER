@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     // 요청은 정상이나 비즈니스 중 실패가 있는 경우
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BusinessErrorCode> handleBusinessException(BusinessException e) {
-        log.info(e.getErrorCode().getMessage(), e);
+        log.info("GlobalExceptionHandler catch BusinessException : {}", e.getErrorCode().getMessage());
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
                 .body(e.getErrorCode());
