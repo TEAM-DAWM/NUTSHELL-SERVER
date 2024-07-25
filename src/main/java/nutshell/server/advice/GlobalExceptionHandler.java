@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
                 .body(BusinessErrorCode.GOOGLE_SERVER_ERROR);
     }
 
-    //잘못된 인자 오
+    //잘못된 인자 오류
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<IllegalArgumentErrorCode> handleException(IllegalArgumentException e) {
         log.error(e.getMessage(), e);
