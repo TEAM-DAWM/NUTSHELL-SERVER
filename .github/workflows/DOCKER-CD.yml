@@ -47,8 +47,8 @@ jobs:
 
       - name: docker image 빌드 및 푸시
         run: |
-          docker build --platform linux/amd64 -t ${{ secrets.NUTSHELL_DOCKER_LOGIN_USERNAME }}/nutshell .
-          docker push ${{ secrets.NUTSHELL_DOCKER_LOGIN_USERNAME }}/nutshell
+          docker build --platform linux/amd64 -t ${{ secrets.SHELLIN_DOCKER_LOGIN_USERNAME }}/shellin .
+          docker push ${{ secrets.SHELLIN_DOCKER_LOGIN_USERNAME }}/shellin
         working-directory: ${{ env.working-directory }}
 
   cd:
