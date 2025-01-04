@@ -6,10 +6,9 @@ import nutshell.server.domain.Task;
 import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
+import nutshell.server.dto.timeBlock.response.TimeBlockTasksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
-import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
@@ -136,11 +135,10 @@ public class TimeBlockService {
         timeBlockRemover.remove(timeBlock);
     }
 
-    public TimeBlocksWithGooglesDto getTimeBlocksWithGoogle(
+    public TimeBlockTasksDto getTimeBlocks(
             final Long userId,
             final LocalDate startDate,
-            final Integer range,
-            final List<String> categories
+            final Integer range
     ){
         LocalDateTime startTime = startDate.atStartOfDay();
         LocalDateTime endTime = startDate.plusDays(range-1).atTime(23,59,59);
@@ -153,10 +151,8 @@ public class TimeBlockService {
                                 .timeBlocks(timeBlockRetriever.findAllByTaskIdAndTimeRange(task, startTime, endTime))
                                 .build()
                 ).toList();
-        List<GoogleSchedulesDto> googles = googleCalendarService.getGoogleCalendars(userId, startDate, range, categories);
-        return TimeBlocksWithGooglesDto.builder()
+        return TimeBlockTasksDto.builder()
                 .tasks(tasks)
-                .googles(googles)
                 .build();
     }
 }
