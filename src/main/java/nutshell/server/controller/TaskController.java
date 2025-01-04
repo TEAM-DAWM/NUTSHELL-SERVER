@@ -8,10 +8,8 @@ import nutshell.server.dto.task.request.TargetDateDto;
 import nutshell.server.dto.task.request.TaskCreateDto;
 import nutshell.server.dto.task.request.TaskStatusDto;
 import nutshell.server.dto.task.request.TaskUpdateDto;
-import nutshell.server.dto.task.response.TaskDashboardDto;
 import nutshell.server.dto.task.response.TaskDetailDto;
 import nutshell.server.dto.task.response.TasksDto;
-import nutshell.server.dto.task.response.TodoTaskDto;
 import nutshell.server.service.task.TaskService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -71,11 +69,10 @@ public class TaskController {
     @GetMapping("/tasks")
     public ResponseEntity<TasksDto> getTasks(
             @UserId final Long userId,
-            @RequestParam(required = false) final Boolean isTotal,
             @RequestParam(required = false) final String order,
             @RequestParam(required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate targetDate
     ){
-        return ResponseEntity.ok(taskService.getTasks(userId, isTotal, order, targetDate));
+        return ResponseEntity.ok(taskService.getTasks(userId, order, targetDate));
     }
 
    // Task 설명 수정 PATCH API (데드라인 수정 완료)
@@ -87,24 +84,5 @@ public class TaskController {
     ){
         taskService.updateTask(userId, taskId, taskUpdateDto);
         return ResponseEntity.noContent().build();
-    }
-
-    // Task type별 리스트 조회 (데드라인 수정 완료)
-    @GetMapping("/tasks/today")
-    public ResponseEntity<TodoTaskDto> getTodayTasks(
-            @UserId final Long userId,
-            @RequestParam String type
-    ){
-        return ResponseEntity.ok(taskService.getTodayTasks(userId, type));
-    }
-
-    @GetMapping("/tasks/period")
-    public ResponseEntity<TaskDashboardDto> getDashBoard(
-            @UserId final Long userId,
-            @RequestParam(required = false) final LocalDate startDate,
-            @RequestParam(required = false) final LocalDate endDate,
-            @RequestParam(required = false) final Boolean isMonth
-    ){
-        return ResponseEntity.ok(taskService.getDashboard(userId, startDate, endDate, isMonth));
     }
 }
