@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
-import nutshell.server.dto.timeBlock.response.TimeBlocksWithGooglesDto;
+import nutshell.server.dto.timeBlock.response.TimeBlockTasksDto;
 import nutshell.server.service.timeBlock.TimeBlockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,12 +52,11 @@ public class TimeBlockController {
     }
 
     @GetMapping("/time-blocks")
-    public ResponseEntity<TimeBlocksWithGooglesDto> getTimeBlocks(
+    public ResponseEntity<TimeBlockTasksDto> getTimeBlocks(
             @UserId final Long userId,
             @RequestParam @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate startDate,
-            @RequestParam final Integer range,
-            @RequestParam(required = false) final List<String> categories
+            @RequestParam final Integer range
     ) {
-        return ResponseEntity.ok(timeBlockService.getTimeBlocksWithGoogle(userId, startDate, range, categories));
+        return ResponseEntity.ok(timeBlockService.getTimeBlocks(userId, startDate, range));
     }
 }

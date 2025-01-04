@@ -6,9 +6,7 @@ import nutshell.server.dto.googleCalender.response.GoogleSchedulesDto;
 import java.util.List;
 
 @Builder
-public record TimeBlocksWithGooglesDto(
-        List<TimeBlocksDto> tasks,
-        List<GoogleSchedulesDto> googles
+public record TimeBlockTasksDto(
+        List<TimeBlocksDto> tasks
 ) {
-
 }
