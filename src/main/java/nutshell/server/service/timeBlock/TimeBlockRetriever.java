@@ -2,7 +2,6 @@ package nutshell.server.service.timeBlock;
 
 import lombok.RequiredArgsConstructor;
 import nutshell.server.domain.Task;
-import nutshell.server.domain.TaskStatus;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
 import nutshell.server.dto.timeBlock.response.TimeBlockDto;
@@ -42,13 +41,13 @@ public class TimeBlockRetriever {
         return timeBlockRepository.existsByTaskUserAndStartTimeBetweenAndEndTimeBetween(user, startTime, endTime);
     }
 
-    public Boolean existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
-            final User user,
+    public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(
+            final Task task,
             final Long id,
             final LocalDateTime startTime,
             final LocalDateTime endTime
     ) {
-        return timeBlockRepository.existsByTaskUserAndStartTimeBetweenAndEndTimeBetweenAndIdNot(user, id, startTime, endTime);
+        return timeBlockRepository.existsByTaskAndStartTimeBetweenAndEndTimeBetweenAndIdNot(task, id, startTime, endTime);
     }
 
     public Boolean existsByTaskAndStartTimeBetweenAndEndTimeBetween(
@@ -65,11 +64,5 @@ public class TimeBlockRetriever {
             final LocalDateTime endTime
     ) {
         return timeBlockRepository.findAllByTaskIdAndTimeRange(task, startTime, endTime);
-    }
-
-    public TimeBlock findByTaskStatus(
-            final TaskStatus taskStatus
-    ){
-        return timeBlockRepository.findByTaskStatus(taskStatus).orElse(null);
     }
 }

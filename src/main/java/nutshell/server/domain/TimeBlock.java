@@ -28,15 +28,15 @@ public class TimeBlock {
     @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToOne(targetEntity = TaskStatus.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_status_id", nullable = false)
-    private TaskStatus taskStatus;
+    @ManyToOne(targetEntity = Task.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id", nullable = false)
+    private Task task;
 
     @Builder
-    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, TaskStatus taskStatus) {
+    public TimeBlock(LocalDateTime startTime, LocalDateTime endTime, Task task) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.taskStatus = taskStatus;
+        this.task = task;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

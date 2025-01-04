@@ -20,7 +20,7 @@ configurations {
 
 }
 
-configurations.all {
+configurations.configureEach {
 	exclude group: 'commons-logging', module: 'commons-logging'
 }
 

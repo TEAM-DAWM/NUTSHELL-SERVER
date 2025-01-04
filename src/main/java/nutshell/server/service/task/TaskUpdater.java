@@ -7,9 +7,7 @@ import nutshell.server.dto.type.Status;
 import nutshell.server.dto.task.request.TaskUpdateDto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Component
@@ -42,5 +40,12 @@ public class TaskUpdater {
             final LocalDate assignedDate
     ) {
         task.updateAssignedDate(assignedDate);
+    }
+
+    public void updateEndDate(
+            final Task task,
+            final LocalDate endDate
+    ) {
+        task.updateEndDate(endDate);
     }
 }

@@ -13,7 +13,6 @@ public record TasksDto(
             Long id,
             String name,
             TaskCreateDto.DeadLine deadLine,
-            Boolean hasDescription,
             String status
     ) {
     }

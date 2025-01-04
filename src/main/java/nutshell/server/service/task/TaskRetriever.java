@@ -30,6 +30,20 @@ public class TaskRetriever {
     public List<Task> findAllByUserAndTimeBlocks(User user, LocalDateTime startTime, LocalDateTime endTime) {
         return taskRepository.findAllByUserAndTimeBlocks(user, startTime, endTime);
     }
+    public List<Task> findAllByUserAndAssignedDateOrderByCreatedAtDesc(final User user, final LocalDate assignedDate){
+        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtDesc(user, assignedDate);
+    }
+
+    public List<Task> findAllByUserAndAssignedDateOrderByCreatedAtAsc(final User user, final LocalDate assignedDate){
+        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtAsc(user, assignedDate);
+    }
+    public List<Task> findAllByUserAndAssignedDateOrderByTimeDiffAsc(final User user, final LocalDate assignedDate){
+        return taskRepository.findAllByUserAndAssignedDateOrderByTimeDiffAsc(user.getId(), assignedDate);
+    }
+
+    public List<Task> findAllByUserAndAssignedDateOrderByTimeDiffDesc(final User user, final LocalDate assignedDate){
+        return taskRepository.findAllByUserAndAssignedDateOrderByTimeDiffDesc(user.getId(), assignedDate);
+    }
     public List<Task> findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(final User user){
         return taskRepository.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user);
     }

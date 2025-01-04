@@ -39,6 +39,9 @@ public class Task {
     @Column(name = "assigned_date")
     private LocalDate assignedDate;
 
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Column(name = "reminder")
     private String reminder;
 
@@ -59,8 +62,8 @@ public class Task {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<TaskStatus> taskStatuses;
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "task")
+    private List<TimeBlock> timeBlocks;
 
     @Builder
     public Task(User user, String name, String description, LocalDate deadLineDate, LocalTime deadLineTime) {
@@ -94,6 +97,11 @@ public class Task {
 
     public void updateStatus(Status status) {
         this.status = status;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate = endDate;
         this.updatedAt = LocalDateTime.now();
     }
 }

@@ -11,6 +11,7 @@ public enum BusinessErrorCode implements DefaultErrorCode{
     WRONG_ENTRY_POINT(HttpStatus.BAD_REQUEST, "error", "잘못된 요청입니다."),
     TIME_CONFLICT(HttpStatus.OK, "conflict", "시작 시간은 종료 시간 이전이어야 합니다."),
     NOT_SAME_DATE_CONFLICT(HttpStatus.OK, "conflict", "시작 시간과 종료 시간의 날짜가 같아야 합니다."),
+    TIME_INVALID(HttpStatus.OK, "conflict", "시간이 올바르지 않습니다."),
     DUP_TIMEBLOCK_CONFLICT(HttpStatus.OK,"conflict","지정된 시간 범위 내에 이미 타임 블록이 있습니다."),
     DUP_DAY_TIMEBLOCK_CONFLICT(HttpStatus.OK, "conflict", "지정된 날짜의 작업에 대한 타임 블록이 이미 있습니다."),
     DENY_DAY_TIMEBLOCK_CONFLICT(HttpStatus.OK, "conflict", "지정된 날짜에 대한 타임 블록을 생성할 수 없습니다."),
