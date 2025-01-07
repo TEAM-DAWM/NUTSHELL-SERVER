@@ -1,7 +1,7 @@
 name: DOCKER-CD
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
   ci:
@@ -47,8 +47,8 @@ jobs:
 
       - name: docker image 빌드 및 푸시
         run: |
-          docker build --platform linux/amd64 -t ${{ secrets.BBANGZIP_DOCKER_LOGIN_USERNAME }}/bakery .
-          docker push ${{ secrets.BBANGZIP_DOCKER_LOGIN_USERNAME }}/bakery
+          docker build --platform linux/amd64 -t ${{ secrets.SHELLIN_DOCKER_LOGIN_USERNAME }}/shellin .
+          docker push ${{ secrets.SHELLIN_DOCKER_LOGIN_USERNAME }}/shellin
         working-directory: ${{ env.working-directory }}
 
   cd:
