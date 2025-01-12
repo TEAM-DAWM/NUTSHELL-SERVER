@@ -20,25 +20,25 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByUserAndTimeBlocks(final User user, LocalDateTime startTime, LocalDateTime endTime);
     @Query(
             value = "select * from task t where t.user_id = :userId " +
-                    "AND t.assigned_date is not null" +
-                    "AND (t.end_date is null or :assignedDate between t.assigned_date and t.end_date)" +
+                    "AND t.assigned_date is not null " +
+                    "AND ((t.end_date is null and :assignedDate >= t.assigned_date) or :assignedDate between t.assigned_date and t.end_date) " +
                     "order by t.created_at desc"
             , nativeQuery = true
     )
-    List<Task> findAllByUserAndAssignedDateOrderByCreatedAtDesc(final User user, final LocalDate assignedDate);
+    List<Task> findAllByUserAndAssignedDateOrderByCreatedAtDesc(final Long userId, final LocalDate assignedDate);
     @Query(
             value = "select * from task t where t.user_id = :userId " +
-                    "AND t.assigned_date is not null" +
-                    "AND (t.end_date is null or :assignedDate between t.assigned_date and t.end_date)" +
+                    "AND t.assigned_date is not null " +
+                    "AND ((t.end_date is null and :assignedDate >= t.assigned_date) or :assignedDate between t.assigned_date and t.end_date) " +
                     "order by t.created_at asc"
             , nativeQuery = true
     )
-    List<Task> findAllByUserAndAssignedDateOrderByCreatedAtAsc(final User user, final LocalDate assignedDate);
+    List<Task> findAllByUserAndAssignedDateOrderByCreatedAtAsc(final Long userId, final LocalDate assignedDate);
 
     @Query(
             value = "select * from task t where t.user_id = :userId " +
-                    "AND t.assigned_date is not null" +
-                    "AND (t.end_date is null or :assignedDate between t.assigned_date and t.end_date)" +
+                    "AND t.assigned_date is not null " +
+                    "AND ((t.end_date is null and :assignedDate >= t.assigned_date) or :assignedDate between t.assigned_date and t.end_date) " +
                     "order by abs(current_date - t.dead_line_date) asc nulls last, " +
                     "abs(extract(epoch from current_time - t.dead_line_time)) asc nulls last"
             , nativeQuery = true
@@ -47,8 +47,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(
             value = "select * from task t where t.user_id = :userId " +
-                    "AND t.assigned_date is not null" +
-                    "AND (t.end_date is null or :assignedDate between t.assigned_date and t.end_date)" +
+                    "AND t.assigned_date is not null " +
+                    "AND ((t.end_date is null and :assignedDate >= t.assigned_date) or :assignedDate between t.assigned_date and t.end_date) " +
                     "order by abs(current_date - t.dead_line_date) desc nulls last, " +
                     "abs(extract(epoch from current_time - t.dead_line_time)) desc nulls last"
             , nativeQuery = true
@@ -77,27 +77,23 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(final Long userId);
 
     @Query(
+            value = "SELECT * FROM task t " +
+            "WHERE t.user_id = :userId " +
+            "AND t.assigned_date IS NOT NULL " +
+            "AND ((t.end_date IS NULL AND :targetDate >= t.assigned_date) OR :targetDate BETWEEN t.assigned_date AND t.end_date) " +
+            "ORDER BY ARRAY_POSITION(CAST(:taskList AS BIGINT[]), t.id)",
+    nativeQuery = true
+    )
+    List<Task> findAllByCustomOrderAndAssignedDateIsNotNull(
+            final Long userId,
+            final LocalDate targetDate,
+            final Long[] taskList
+    );
+    @Query(
             value = "select * from task t where t.user_id = :userId " +
                     "AND t.assigned_date is null " +
-                    "AND t.dead_line_date <= current_date + interval '2 days' " +
-                    "order by t.dead_line_date asc nulls last, t.dead_line_time asc nulls last"
+                    "ORDER BY ARRAY_POSITION(CAST(:taskList AS BIGINT[]), t.id)"
             ,nativeQuery = true
     )
-    List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId);
-
-    @Query(
-            value = "select * from task t where t.user_id = :userId " +
-                    "AND t.status = 'DEFERRED' AND t.assigned_date is null " +
-                    "order by t.dead_line_date nulls last, t.dead_line_time nulls last"
-            ,nativeQuery = true
-    )
-    List<Task> findAllDeferredTasksByUserWithStatus(final Long userId);
-
-    // 설정한 기간 내의 assigned 된 일들 찾는 거
-    @Query(
-            value = "select count(*) from task t where t.user_id = :userId " +
-                    "AND t.assigned_date BETWEEN :startDate AND :endDate"
-            ,nativeQuery = true
-    )
-    Integer countAllAssignedTasksInPeriod(final Long userId, final LocalDate startDate, final LocalDate endDate);
+    List<Task> findAllByCustomOrderAndAssignedDateIsNull(final Long userId, final Long[] taskList);
 }

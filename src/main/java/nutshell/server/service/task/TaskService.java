@@ -3,17 +3,17 @@ package nutshell.server.service.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nutshell.server.domain.Task;
+import nutshell.server.domain.TaskOrder;
 import nutshell.server.domain.TimeBlock;
 import nutshell.server.domain.User;
-import nutshell.server.dto.task.request.TargetDateDto;
-import nutshell.server.dto.task.request.TaskCreateDto;
-import nutshell.server.dto.task.request.TaskStatusDto;
-import nutshell.server.dto.task.request.TaskUpdateDto;
+import nutshell.server.dto.task.request.*;
 import nutshell.server.dto.task.response.TaskDetailDto;
 import nutshell.server.dto.task.response.TasksDto;
 import nutshell.server.dto.type.Status;
 import nutshell.server.exception.IllegalArgumentException;
 import nutshell.server.exception.code.IllegalArgumentErrorCode;
+import nutshell.server.service.taskOrder.TaskOrderRetriever;
+import nutshell.server.service.taskOrder.TaskOrderSaver;
 import nutshell.server.service.timeBlock.TimeBlockRetriever;
 import nutshell.server.service.user.UserRetriever;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,6 +33,8 @@ public class TaskService {
     private final TaskSaver taskSaver;
     private final TaskRemover taskRemover;
     private final TimeBlockRetriever timeBlockRetriever;
+    private final TaskOrderSaver taskOrderSaver;
+    private final TaskOrderRetriever taskOrderRetriever;
 
     @Transactional
     public void updateStatus(
@@ -50,14 +51,15 @@ public class TaskService {
         } else {
             if (taskStatusDto.status().equals("완료")) {
                 taskUpdater.updateEndDate(task, taskStatusDto.targetDate());
-            } else if (taskStatusDto.status().equals("미완료")) {
-                if (task.getStatus().getContent().equals("완료"))
+            } else {
+                if (task.getEndDate() != null)
                     taskUpdater.updateEndDate(task, null);
                 else if (task.getAssignedDate() == null)
                     taskUpdater.updateAssignedDate(task, taskStatusDto.targetDate());
             }
-            taskUpdater.updateStatus(task, Status.valueOf(taskStatusDto.status()));
+            taskUpdater.updateStatus(task, Status.fromContent(taskStatusDto.status()));
         }
+        log.info("task: {}", task.getAssignedDate());
     }
 
     // Staging Area Task 생성 API (데드라인 추가 완료)
@@ -79,6 +81,7 @@ public class TaskService {
                 .deadLineDate(deadLineDate)
                 .deadLineTime(deadLineTime)
                 .build();
+        log.info("task: {}", task.getEndDate());
         return taskSaver.save(task);
     }
 
@@ -116,35 +119,43 @@ public class TaskService {
             final LocalDate targetDate
     ) {
         User user = userRetriever.findByUserId(userId);
-        List<TasksDto.TaskDto> taskItems = new ArrayList<>();
-        //사용자설정순 추가해야함
+        List<TasksDto.TaskDto> taskItems;
+        List<Task> tasks;
         if (targetDate != null) {
-            List<Task> tasks = switch (order) {
+            TaskOrder taskOrder = taskOrderRetriever.findById(userId, true, targetDate);
+            tasks = switch (order) {
                         case "recent" -> taskRetriever.findAllByUserAndAssignedDateOrderByCreatedAtDesc(user, targetDate);
                         case "old" -> taskRetriever.findAllByUserAndAssignedDateOrderByCreatedAtAsc(user, targetDate);
                         case "near" -> taskRetriever.findAllByUserAndAssignedDateOrderByTimeDiffAsc(user, targetDate);
                         case "far" -> taskRetriever.findAllByUserAndAssignedDateOrderByTimeDiffDesc(user, targetDate);
+                        case "user" -> taskOrder == null ?
+                                taskRetriever.findAllByUserAndAssignedDateOrderByCreatedAtDesc(user, targetDate)
+                                :
+                                taskRetriever.findAllByCustomOrderAndAssignedDateIsNotNull(userId, targetDate, taskOrder.getTaskList());
                         default -> throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
-
                     };
         } else {
-            List<Task> tasks = switch (order) {
+            TaskOrder taskOrder = taskOrderRetriever.findById(userId, false, null);
+            tasks = switch (order) {
                         case "recent" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user);
                         case "old" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtAsc(user);
                         case "near" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByTimeDiffAsc(user);
                         case "far" -> taskRetriever.findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(user);
+                        case "user" -> taskOrder == null ?
+                                taskRetriever.findAllByUserAndAssignedDateIsNullOrderByCreatedAtDesc(user)
+                                :
+                                taskRetriever.findAllByCustomOrderAndAssignedDateIsNull(userId, taskOrder.getTaskList());
                         default -> throw new IllegalArgumentException(IllegalArgumentErrorCode.INVALID_ARGUMENTS);
-
                     };
-            taskItems = tasks.stream().map(
-                    task -> TasksDto.TaskDto.builder()
-                            .id(task.getId())
-                            .name(task.getName())
-                            .status(task.getStatus().getContent())
-                            .deadLine(new TaskCreateDto.DeadLine(task.getDeadLineDate(), task.getDeadLineTime()))
-                            .build()
-            ).toList();
         }
+        taskItems = tasks.stream().map(
+                task -> TasksDto.TaskDto.builder()
+                        .id(task.getId())
+                        .name(task.getName())
+                        .status(task.getStatus().getContent())
+                        .deadLine(new TaskCreateDto.DeadLine(task.getDeadLineDate(), task.getDeadLineTime()))
+                        .build()
+        ).toList();
         return TasksDto.builder().tasks(taskItems).build();
     }
 
@@ -154,5 +165,17 @@ public class TaskService {
         User user = userRetriever.findByUserId(userId);
         Task task = taskRetriever.findByUserAndId(user, taskId);
         taskUpdater.editDetails(task, taskUpdateDto);
+    }
+
+    @Transactional
+    public TaskOrder createOrder(final Long userId, final TaskOrderDto taskOrderDto) {
+        User user = userRetriever.findByUserId(userId);
+        TaskOrder taskOrder = TaskOrder.builder()
+                .userId(user.getId())
+                .type(taskOrderDto.type())
+                .targetDate(taskOrderDto.targetDate())
+                .taskList(taskOrderDto.taskList())
+                .build();
+        return taskOrderSaver.save(taskOrder);
     }
 }

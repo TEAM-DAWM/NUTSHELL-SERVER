@@ -8,7 +8,6 @@ import nutshell.server.domain.User;
 import nutshell.server.dto.timeBlock.request.TimeBlockRequestDto;
 import nutshell.server.dto.timeBlock.response.TimeBlockTasksDto;
 import nutshell.server.dto.timeBlock.response.TimeBlocksDto;
-import nutshell.server.dto.type.Status;
 import nutshell.server.exception.BusinessException;
 import nutshell.server.exception.code.BusinessErrorCode;
 import nutshell.server.service.task.TaskRetriever;

@@ -31,11 +31,11 @@ public class TaskRetriever {
         return taskRepository.findAllByUserAndTimeBlocks(user, startTime, endTime);
     }
     public List<Task> findAllByUserAndAssignedDateOrderByCreatedAtDesc(final User user, final LocalDate assignedDate){
-        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtDesc(user, assignedDate);
+        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtDesc(user.getId(), assignedDate);
     }
 
     public List<Task> findAllByUserAndAssignedDateOrderByCreatedAtAsc(final User user, final LocalDate assignedDate){
-        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtAsc(user, assignedDate);
+        return taskRepository.findAllByUserAndAssignedDateOrderByCreatedAtAsc(user.getId(), assignedDate);
     }
     public List<Task> findAllByUserAndAssignedDateOrderByTimeDiffAsc(final User user, final LocalDate assignedDate){
         return taskRepository.findAllByUserAndAssignedDateOrderByTimeDiffAsc(user.getId(), assignedDate);
@@ -59,15 +59,13 @@ public class TaskRetriever {
         return taskRepository.findAllByUserAndAssignedDateIsNullOrderByTimeDiffDesc(user.getId());
     }
 
-    public List<Task> findAllUpcomingTasksByUserWitAssignedStatus(final Long userId){
-        return taskRepository.findAllUpcomingTasksByUserWitAssignedStatus(userId);
+    public List<Task> findAllByCustomOrderAndAssignedDateIsNotNull(final Long userId, final LocalDate targetDate, final List<Long> taskList){
+        Long[] taskListArray = taskList.toArray(new Long[0]);
+        return taskRepository.findAllByCustomOrderAndAssignedDateIsNotNull(userId, targetDate, taskListArray);
     }
 
-    public List<Task> findAllDeferredTasksByUserWithStatus(final Long userId){
-        return taskRepository.findAllDeferredTasksByUserWithStatus(userId);
-    }
-  
-    public Integer countAllAssignedTasksInPeriod(final Long userId, final LocalDate startDate, final LocalDate endDate){
-        return taskRepository.countAllAssignedTasksInPeriod(userId, startDate, endDate);
+    public List<Task> findAllByCustomOrderAndAssignedDateIsNull(final Long userId, final List<Long> taskList){
+        Long[] taskListArray = taskList.toArray(new Long[0]);
+        return taskRepository.findAllByCustomOrderAndAssignedDateIsNull(userId, taskListArray);
     }
 }

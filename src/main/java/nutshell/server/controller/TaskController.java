@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nutshell.server.annotation.UserId;
-import nutshell.server.dto.task.request.TargetDateDto;
-import nutshell.server.dto.task.request.TaskCreateDto;
-import nutshell.server.dto.task.request.TaskStatusDto;
-import nutshell.server.dto.task.request.TaskUpdateDto;
+import nutshell.server.dto.task.request.*;
 import nutshell.server.dto.task.response.TaskDetailDto;
 import nutshell.server.dto.task.response.TasksDto;
 import nutshell.server.service.task.TaskService;
@@ -39,7 +36,7 @@ public class TaskController {
     @PostMapping("/tasks")
     public ResponseEntity<Void> createTask(
             @UserId final Long userId,
-            @RequestBody @Valid final TaskCreateDto taskCreateDto
+            @Valid @RequestBody final TaskCreateDto taskCreateDto
     ){
         return ResponseEntity.created(URI.create(taskService.createTask(userId, taskCreateDto).getId().toString())).build();
     }
@@ -84,5 +81,13 @@ public class TaskController {
     ){
         taskService.updateTask(userId, taskId, taskUpdateDto);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/tasks/orders")
+    public ResponseEntity<Void> createOrder(
+            @UserId final Long userId,
+            @RequestBody final TaskOrderDto taskOrderDto
+    ) {
+        return ResponseEntity.created(URI.create(taskService.createOrder(userId, taskOrderDto).getId())).build();
     }
 }
