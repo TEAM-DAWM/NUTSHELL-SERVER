@@ -66,7 +66,7 @@ public class TaskController {
     @GetMapping("/tasks")
     public ResponseEntity<TasksDto> getTasks(
             @UserId final Long userId,
-            @RequestParam(required = false) final String order,
+            @RequestParam final String order,
             @RequestParam(required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") final LocalDate targetDate
     ){
         return ResponseEntity.ok(taskService.getTasks(userId, order, targetDate));
