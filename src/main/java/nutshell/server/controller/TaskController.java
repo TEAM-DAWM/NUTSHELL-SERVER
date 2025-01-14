@@ -86,7 +86,7 @@ public class TaskController {
     @PostMapping("/tasks/orders")
     public ResponseEntity<Void> createOrder(
             @UserId final Long userId,
-            @RequestBody final TaskOrderDto taskOrderDto
+            @Valid @RequestBody final TaskOrderDto taskOrderDto
     ) {
         return ResponseEntity.created(URI.create(taskService.createOrder(userId, taskOrderDto).getId())).build();
     }
